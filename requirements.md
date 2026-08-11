@@ -16,13 +16,13 @@ Maintaining on-site security personnel solely for manual monitoring is labor-int
 
 ## Requirements
 
-1. Detect vehicles from parking-lot camera footage.
-2. Determine whether parking spaces are occupied/free.
-3. Track vehicles across video frames.
-4. Detect license plates.
-5. Recognize license plate numbers.
-6. Record vehicle entry time.
-7. Record vehicle exit time.
-8. Calculate parking duration.
-9. Store parking records in a database.
-10. Display current parking availability.
+### Functional requirements 
+1. Detect vehicles' license plates from parking-lot entry camera footage.
+2. Record vehicle entry time and save it to the database 
+3. Record vehicle exit time and save it to the database
+4. Calculate parking duration when the vehicle is detected exiting the gate
+5. Store parking records in a database.
+6. Display current parking availability.
+
+### Non-functional requirements
+1. Detection accuarcy of 90%

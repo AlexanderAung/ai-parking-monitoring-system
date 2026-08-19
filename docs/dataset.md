@@ -1,5 +1,27 @@
-The official Roboflow dataset
-Augmentations
+# Dataset
+
+## 1. Dataset Source
+
+[Official_roboflow_dataset_link](https://universe.roboflow.com/roboflow-universe-projects/license-plate-recognition-rxg4e/dataset/13)
+
+## 2. Dataset Structure
+train/
+valid/
+test/
+
+## 3. Dataset Statistics
+| Split | Images | Annotations |
+|------|-------:|------------:|
+| Train | 98798 | 102844|
+| Validation | 2048| ... |
+| Test | 1020| ... |
+
+## 4. Classes
+- license_plate
+
+
+## 5. Data Augmentations 
+The following augmentations techniques are applied to the dataset and the output per training example is 14
 1. Outputs per training example: 14
 2. Flip: Horizontal
 3. Crop: 0% Minimum Zoom, 15% Maximum Zoom
@@ -13,47 +35,11 @@ Augmentations
 11. Blur: Up to 0.5px
 12. Cutout: 5 boxes with 2% size each
 
-# Dataset
-
-## 2. Dataset Source
-
+## 6. Data Cleaning
 ...
 
-## 3. Dataset Structure
-
-train/
-valid/
-test/
-
-## 4. Dataset Statistics
-
-| Split | Images | Annotations |
-|------|-------:|------------:|
-| Train | ... | ... |
-| Validation | ... | ... |
-| Test | ... | ... |
-
-## 5. Classes
-
-- license_plate
-
-## 6. Data Quality Issues
-
-During inspection, the following issues were identified:
-
-- duplicate images
-- incorrect annotations
-- missing annotations
-- ...
-    
-## 7. Data Cleaning
-
+## 7. Final Dataset
 ...
 
-## 8. Final Dataset
-
-...
-
-## 9. Limitations
-
+## 8. Limitations
 ...

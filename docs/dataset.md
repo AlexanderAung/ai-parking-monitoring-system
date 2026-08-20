@@ -36,7 +36,10 @@ The following augmentations techniques are applied to the dataset and the output
 12. Cutout: 5 boxes with 2% size each
 
 ## 6. Data Cleaning
-...
+To effectively use the data, we need to analyze the dataset and take out relevant data for the project. 
+In our case, we should start off by calculating the bounding box area relative to the pic of the actual footage, CCTV that we will be using. 
+
+
 
 ## 7. Final Dataset
 ...

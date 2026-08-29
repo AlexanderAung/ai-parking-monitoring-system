@@ -17,8 +17,8 @@ train_dataloader:
   type: DataLoader
   dataset:
     type: CocoDetection
-    img_folder: ./dataset/coco/train/
-    ann_file: ./dataset/coco/annotations/instances_train.json
+    img_folder: ./dataset/train_1000/
+    ann_file: ./dataset/annotations/instances_train_1000.json
     return_masks: False
     transforms:
       type: Compose

@@ -1,3 +1,9 @@
+# Ignore image folders 
+# Generated image selections
+data/top_1000_selected_images/
+notebooks/selected_images/
+notebooks/top_n_selected_images/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

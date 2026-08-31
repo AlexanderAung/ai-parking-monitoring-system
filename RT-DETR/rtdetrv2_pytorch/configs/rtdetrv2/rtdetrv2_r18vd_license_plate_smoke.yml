@@ -1,0 +1,76 @@
+__include__: [
+  '../dataset/license_plate.yml',
+  '../runtime.yml',
+  './include/dataloader.yml',
+  './include/optimizer.yml',
+  './include/rtdetrv2_r50vd.yml',
+]
+
+output_dir: ./output/rtdetrv2_r18vd_license_plate_smoke
+
+num_classes: 1
+remap_mscoco_category: False
+
+PResNet:
+  depth: 18
+  freeze_at: -1
+  freeze_norm: False
+  pretrained: False
+
+HybridEncoder:
+  in_channels: [128, 256, 512]
+  hidden_dim: 256
+  expansion: 0.5
+
+RTDETRTransformerv2:
+  num_layers: 3
+
+epoches: 1
+use_amp: False
+use_ema: False
+sync_bn: False
+print_freq: 10
+checkpoint_freq: 1
+clip_max_norm: 0.1
+
+optimizer:
+  type: AdamW
+  params:
+    -
+      params: '^(?=.*backbone)(?!.*norm).*$'
+      lr: 0.00001
+    -
+      params: '^(?=.*(?:encoder|decoder))(?=.*(?:norm|bn)).*$'
+      weight_decay: 0.
+  lr: 0.0001
+  betas: [0.9, 0.999]
+  weight_decay: 0.0001
+
+lr_scheduler:
+  type: MultiStepLR
+  milestones: [1000]
+  gamma: 0.1
+
+lr_warmup_scheduler:
+  type: LinearWarmup
+  warmup_duration: 10
+
+train_dataloader:
+  dataset:
+    img_folder: ./dataset/train_1000/
+    ann_file: ./dataset/annotations/instances_train_existing_rtdetr.json
+    transforms:
+      policy:
+        epoch: 1
+  collate_fn:
+    scales: ~
+  total_batch_size: 1
+  num_workers: 0
+  drop_last: False
+
+val_dataloader:
+  dataset:
+    img_folder: ./dataset/train_1000/
+    ann_file: ./dataset/annotations/instances_train_existing_rtdetr.json
+  total_batch_size: 1
+  num_workers: 0

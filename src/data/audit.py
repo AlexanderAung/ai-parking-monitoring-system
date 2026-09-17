@@ -119,25 +119,33 @@ def audit_boxes_for_image(rel, W, H, boxes, is_normalized, state: AuditState):
         if cls < 0 or cls >= len(CLASS_NAMES):
             state.add(rel, "class_id_invalid", SEV_ERROR, f"cls={cls}"); continue
         state.class_counts[CLASS_NAMES[cls]] += 1
+        clipped = False
         if is_normalized:
             if not (0.0 <= x <= 1.0 and 0.0 <= y <= 1.0):
-                state.add(rel, "box_center_oob", SEV_ERROR, f"cx,cy=({x:.3f},{y:.3f})"); continue
+                state.add(rel, "box_center_oob", SEV_ERROR, f"cx,cy=({x:.3f},{y:.3f})")
+                continue
             if not (EPS < w <= 1.0 + EPS and EPS < h <= 1.0 + EPS):
-                state.add(rel, "box_size_invalid", SEV_ERROR, f"w,h=({w:.4f},{h:.4f})"); continue
+                state.add(rel, "box_size_invalid", SEV_ERROR, f"w,h=({w:.4f},{h:.4f})")
+                continue
+
             x1, y1, x2, y2 = x - w/2, y - h/2, x + w/2, y + h/2
-            if x1 < -EPS or y1 < -EPS or x2 > 1 + EPS or y2 > 1 + EPS:
-                n_clipped_this += 1
+            clipped = x1 < -EPS or y1 < -EPS or x2 > 1 + EPS or y2 > 1 + EPS
+
             aw, ah, rel_area = w * W, h * H, w * h
         else:
             if w <= 0 or h <= 0:
-                state.add(rel, "box_size_invalid", SEV_ERROR, f"w,h=({w},{h})"); continue
-            if x < 0 or y < 0 or x + w > W or y + h > H:
-                n_clipped_this += 1
+                state.add(rel, "box_size_invalid", SEV_ERROR, f"w,h=({w},{h})")
+                continue
+
+            clipped = x < 0 or y < 0 or x + w > W or y + h > H
+
             aw, ah = w, h
             rel_area = (w * h) / max(W * H, 1)
-        if n_clipped_this:
+        if clipped:
             state.n_boxes_clipped += 1
-            state.add(rel, "box_out_of_bounds", SEV_WARN, f"{n_clipped_this} box(es) exceed bounds")
+            state.add(rel, "box_out_of_bounds", SEV_WARN, "box exceeds image bounds")
+
+        
         state.box_rel_area.append(rel_area)
         state.box_abs_w.append(aw); state.box_abs_h.append(ah)
         if rel_area < TINY_BOX_MAX_REL_AREA:
@@ -248,7 +256,7 @@ def main():
         for fname, boxes in coco_index.items():
             if fname in names:
                 anno_map[names[fname]] = ("coco", boxes)
-        state.n_annos = len(coco_index)
+        state.n_annos = sum(len(boxes) for boxes in coco_index.values())
         n_img_orphan = len(images) - len(anno_map)
         n_ann_orphan = 0
     else:

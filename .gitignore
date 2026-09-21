@@ -9,6 +9,7 @@ src/data/audit_inspection
 __pycache__/
 *.py[codz]
 *$py.class
+*.pth
 
 # C extensions
 *.so

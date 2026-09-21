@@ -3,6 +3,7 @@
 /data/baseline_v1_0/images/
 /data/selected_v0_1/images/
 src/data/audit_inspection
+/src/parking_monitoring/data/audit_inspection
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

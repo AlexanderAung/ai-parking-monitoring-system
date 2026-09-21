@@ -32,8 +32,6 @@ Before selecting any images, do data audit with src/data/audit.py
 ### Issues 
 Found 2278 warning issues, check with issues-checker.py
 
-### Dataset version: v1.0
-**Purpose:** Baseline training 
 
 
 

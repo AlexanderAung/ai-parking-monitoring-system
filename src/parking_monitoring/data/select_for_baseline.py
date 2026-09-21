@@ -24,17 +24,17 @@ import random
 # ============================================================================
 
 # Input: cleaned candidate dataset
-INPUT_DIR = Path("../../data/selected_v0_1")
+INPUT_DIR = Path("data/selected_v0_1")
 INPUT_IMAGE_DIR = INPUT_DIR / "images"
 INPUT_COCO_JSON = INPUT_DIR / "annotations.json"
 
 # Output: baseline dataset
-OUTPUT_DIR = Path("../../data/baseline_v1_0")
+OUTPUT_DIR = Path("data/baseline_test")
 OUTPUT_IMAGE_DIR = OUTPUT_DIR / "images"
 OUTPUT_COCO_JSON = OUTPUT_DIR / "annotations.json"
 
 # Number of images to select
-TARGET_IMAGES = 10_000
+TARGET_IMAGES = 100
 
 # Reproducibility
 RANDOM_SEED = 42

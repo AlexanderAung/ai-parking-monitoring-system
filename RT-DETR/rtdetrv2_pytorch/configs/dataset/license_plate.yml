@@ -17,8 +17,8 @@ train_dataloader:
   type: DataLoader
   dataset:
     type: CocoDetection
-    img_folder: /kaggle/input/datasets/aungkhantbwar/baseline-test/baseline_test/images
-    ann_file: /kaggle/input/datasets/aungkhantbwar/baseline-test/baseline_test/annotations/annotations.json
+    img_folder: drive/MyDrive/license_data/baseline_test/images
+    ann_file: drive/MyDrive/license_data/baseline_test/annotations/annotations.json
     return_masks: False
     transforms:
       type: Compose
@@ -33,8 +33,8 @@ val_dataloader:
   type: DataLoader
   dataset:
     type: CocoDetection
-    img_folder: /kaggle/input/datasets/aungkhantbwar/baseline-test/baseline_test/images
-    ann_file: /kaggle/input/datasets/aungkhantbwar/baseline-test/baseline_test/annotations/annotations.json
+    img_folder: drive/MyDrive/license_data/baseline_test/images
+    ann_file: drive/MyDrive/license_data/baseline_test/annotations/annotations.json
     return_masks: False
     transforms:
       type: Compose

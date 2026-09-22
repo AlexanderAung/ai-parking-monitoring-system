@@ -250056,14 +250056,9 @@
   ],
   "categories": [
     {
-      "id": 0,
-      "name": "license-plates",
-      "supercategory": "none"
-    },
-    {
       "id": 1,
-      "name": "License_Plate",
-      "supercategory": "license-plates"
+      "name": "license-plate",
+      "supercategory": "none"
     }
   ]
 }

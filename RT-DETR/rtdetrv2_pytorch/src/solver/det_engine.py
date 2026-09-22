@@ -13,7 +13,7 @@ import torch
 import torch.amp 
 from torch.utils.tensorboard import SummaryWriter
 from torch.cuda.amp.grad_scaler import GradScaler
-
+import torch.distributed as dist
 from ..optim import ModelEMA, Warmup
 from ..data import CocoEvaluator
 from ..misc import MetricLogger, SmoothedValue, dist_utils
@@ -136,6 +136,25 @@ def evaluate(model: torch.nn.Module, criterion: torch.nn.Module, postprocessor, 
     metric_logger.synchronize_between_processes()
     print("Averaged stats:", metric_logger)
     if coco_evaluator is not None:
+        
+        if dist.is_available() and dist.is_initialized() and torch.cuda.is_available():
+            def _to_cuda(x):
+                if torch.is_tensor(x):
+                    return x.cuda()
+                if isinstance(x, list):
+                    return [_to_cuda(i) for i in x]
+                if isinstance(x, tuple):
+                    return tuple(_to_cuda(i) for i in x)
+                if isinstance(x, dict):
+                    return {k: _to_cuda(v) for k, v in x.items()}
+                return x
+
+            if hasattr(coco_evaluator, "eval_imgs") and isinstance(coco_evaluator.eval_imgs, dict):
+                for k in list(coco_evaluator.eval_imgs.keys()):
+                    coco_evaluator.eval_imgs[k] = _to_cuda(coco_evaluator.eval_imgs[k])
+            if hasattr(coco_evaluator, "img_ids"):
+                coco_evaluator.img_ids = _to_cuda(coco_evaluator.img_ids)
+        # --- END PATCH ---
         coco_evaluator.synchronize_between_processes()
 
     # accumulate predictions from all images

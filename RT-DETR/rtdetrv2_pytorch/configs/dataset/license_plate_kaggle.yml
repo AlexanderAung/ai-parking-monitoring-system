@@ -1,0 +1,41 @@
+task: detection
+
+evaluator:
+  type: CocoEvaluator
+  iou_types: ["bbox" ]
+
+num_classes: 1
+remap_mscoco_category: False
+
+train_dataloader:
+  total_batch_size: 2
+  type: DataLoader
+  dataset:
+    type: CocoDetection
+    img_folder: /kaggle/input/datasets/aungkhantbwar/baseline/images/images
+    ann_file: /kaggle/input/datasets/aungkhantbwar/baseline/annotations.json
+    return_masks: False
+    transforms:
+      type: Compose
+      ops: ~
+  shuffle: True
+  num_workers: 4
+  drop_last: True
+  collate_fn:
+    type: BatchImageCollateFunction
+
+val_dataloader:
+  type: DataLoader
+  dataset:
+    type: CocoDetection
+    img_folder: /kaggle/input/datasets/aungkhantbwar/baseline/valid/valid
+    ann_file: /kaggle/input/datasets/aungkhantbwar/baseline/val_annotations.json
+    return_masks: False
+    transforms:
+      type: Compose
+      ops: ~
+  shuffle: False
+  num_workers: 4
+  drop_last: False
+  collate_fn:
+    type: BatchImageCollateFunction

@@ -6,7 +6,7 @@ __include__: [
   './include/rtdetrv2_r50vd.yml',
 ]
 
-
+num_classes: 1
 output_dir: ../../output/rtdetrv2_r34vd_license_plate_smoke_tests
 
 

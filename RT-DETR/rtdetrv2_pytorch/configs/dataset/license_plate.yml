@@ -2,7 +2,7 @@ task: detection
 
 evaluator:
   type: CocoEvaluator
-  iou_types: ["bbox"]
+  iou_types: ["bbox" ]
 
 # num_classes: 365
 # remap_mscoco_category: False

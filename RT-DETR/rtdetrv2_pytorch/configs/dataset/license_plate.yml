@@ -11,15 +11,15 @@ evaluator:
 # remap_mscoco_category: False
 
 num_classes: 1
-remap_mscoco_category: False
+remap_mscoco_category: True
 
 train_dataloader:
-  total_batch_size: 2
+  total_batch_size: 16
   type: DataLoader
   dataset:
     type: CocoDetection
-    img_folder: drive/MyDrive/license_data/baseline_test/images
-    ann_file: drive/MyDrive/license_data/baseline_test/annotations/annotations.json
+    img_folder: /kaggle/input/datasets/aungkhantbwar/baseline-test/baseline_test/images
+    ann_file: /kaggle/input/datasets/aungkhantbwar/baseline-test/annotations.json
     return_masks: False
     transforms:
       type: Compose
@@ -34,8 +34,8 @@ val_dataloader:
   type: DataLoader
   dataset:
     type: CocoDetection
-    img_folder: drive/MyDrive/license_data/baseline_test/images
-    ann_file: drive/MyDrive/license_data/baseline_test/annotations/annotations.json
+    img_folder: /kaggle/input/datasets/aungkhantbwar/baseline-test/baseline_test/inages
+    ann_file: /kaggle/input/datasets/aungkhantbwar/baseline-test/annotations.json
     return_masks: False
     transforms:
       type: Compose

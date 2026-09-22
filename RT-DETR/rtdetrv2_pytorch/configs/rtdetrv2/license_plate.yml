@@ -7,7 +7,7 @@ __include__: [
 ]
 
 num_classes: 1
-output_dir: ../../output/rtdetrv2_r34vd_license_plate_smoke_tests
+output_dir: ../../output/license_plate_smoke_test
 
 
 PResNet:
@@ -27,7 +27,7 @@ RTDETRTransformerv2:
   num_layers: 4
 
 
-epoches: 1
+epoches: 2
 
 optimizer:
   type: AdamW

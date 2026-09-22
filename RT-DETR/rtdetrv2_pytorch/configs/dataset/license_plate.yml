@@ -11,7 +11,7 @@ evaluator:
 # remap_mscoco_category: False
 
 num_classes: 1
-remap_mscoco_category: True
+remap_mscoco_category: False
 
 train_dataloader:
   total_batch_size: 16

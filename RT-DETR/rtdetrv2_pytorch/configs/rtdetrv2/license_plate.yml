@@ -24,7 +24,7 @@ HybridEncoder:
 RTDETRTransformerv2:
   num_layers: 3
 
-epoches: 2
+epoches: 50
 
 train_dataloader:
   total_batch_size: 8

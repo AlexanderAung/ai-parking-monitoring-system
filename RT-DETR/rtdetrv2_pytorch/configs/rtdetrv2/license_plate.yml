@@ -8,6 +8,7 @@ __include__:
   ]
 
 output_dir: ./output/license_plate
+summary_dir: ./output/license_plate/tensorboard
 
 PResNet:
   depth: 18
@@ -23,18 +24,13 @@ HybridEncoder:
 RTDETRTransformerv2:
   num_layers: 3
 
-epoches: 1
-
-optimizer:
-  type: AdamW
-  params:
-    - params: "^(?=.*(?:norm|bn)).*$"
-      weight_decay: 0.
+epoches: 50
 
 train_dataloader:
+  total_batch_size: 8
   dataset:
     transforms:
       policy:
-        epoch: 117
+        epoch: 47
   collate_fn:
     scales: ~

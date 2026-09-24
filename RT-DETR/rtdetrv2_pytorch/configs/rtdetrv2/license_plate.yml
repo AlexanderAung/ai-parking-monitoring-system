@@ -7,8 +7,8 @@ __include__:
     "./include/rtdetrv2_r50vd.yml",
   ]
 
-output_dir: ./output/license_plate
-summary_dir: ./output/license_plate/tensorboard
+output_dir: /kaggle/working/output/license_plate
+summary_dir: /kaggle/working/output/license_plate/tensorboard
 
 PResNet:
   depth: 18
@@ -31,6 +31,6 @@ train_dataloader:
   dataset:
     transforms:
       policy:
-        epoch: 47
+        epoch: 40
   collate_fn:
     scales: ~

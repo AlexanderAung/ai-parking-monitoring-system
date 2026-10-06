@@ -5,7 +5,17 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "faster-coco-eval>=1.6.6",
     "matplotlib>=3.11.2",
     "numpy>=2.5.3",
+    "onnx>=1.23.1",
+    "onnxruntime>=1.30.0",
+    "packaging>=26.3",
     "pillow>=12.3.0",
+    "pycocotools>=2.0.11",
+    "pyyaml>=6.0.3",
+    "scipy>=1.18.1",
+    "tensorboard>=2.21.0",
+    "torch>=2.0.1",
+    "torchvision>=0.15.2",
 ]

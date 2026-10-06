@@ -4,7 +4,7 @@
 Understand what types of examples cause the baseline model to make detection errors.
 
 ## Experiment 
-- Model: RT-DETR
+- Model: RT-DETRv2
 - Checkpoint: Best checkpoint, epoch 19
 - Dataset: License plate dataset v1
 - Validation set: 2048
@@ -16,7 +16,6 @@ Understand what types of examples cause the baseline model to make detection err
 - Small AP: 0.389
 - Medium AP: 0.771
 - Large AP: 0.681
-
 
 ## Observations
 

@@ -5,17 +5,21 @@ Understand what types of examples cause the baseline model to make detection err
 
 ## Experiment 
 - Model: RT-DETRv2
-- Checkpoint: Best checkpoint, epoch 19
+- Checkpoint: Best checkpoint, zero-based epoch index 19 (20th completed epoch)
 - Dataset: License plate dataset v1
 - Validation set: 2048
 
 ## Baseline Metrics
-- mAP@[0.50:0.95]: 0.656
-- AP50: 0.932
-- AP75: 0.771
-- Small AP: 0.389
-- Medium AP: 0.771
-- Large AP: 0.681
+- mAP@[0.50:0.95]: 0.6565
+- AP50: 0.9323
+- AP75: 0.7714
+- Small AP: 0.4189
+- Medium AP: 0.7143
+- Large AP: 0.6686
+
+Source: the `test_coco_eval_bbox` values at epoch index 19 in [log.txt](log.txt).
+Despite the field name, these are validation metrics. Prediction-level error
+analysis has not yet been recorded. See the [baseline report](report.md).
 
 ## Observations
 

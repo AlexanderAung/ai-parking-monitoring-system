@@ -36,15 +36,3 @@ Found 2278 warning issues, check with issues-checker.py
 
 
 
-
-## 5. Data Cleaning
-
-## 6. Dataset Split
-
-## 7. Data Distribution
-
-## 8. Final Dataset
-
-## 9. Limitations
-
-

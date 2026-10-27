@@ -1,11 +1,13 @@
 # Data folder 
 /data/raw/
+/data/processed
 /data/baseline_v1_0/images/
 /data/selected_v0_1/images/
 src/data/audit_inspection
 /src/parking_monitoring/data/audit_inspection
 /visualized_valid/
-
+artifacts/visualizations/visualization-ground-truth
+artifacts/data-audit/roboflow-v13-train/audit_inspection
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

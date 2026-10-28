@@ -1,0 +1,60 @@
+{
+  "note": "Hashes identify local evidence inspected when preparing this report. Annotation hashes do not hash the corresponding image contents or prove identity with the Kaggle upload.",
+  "artifacts": [
+    {
+      "path": "notebooks/baseline-training.ipynb",
+      "size_bytes": 657998,
+      "sha256": "476e402749b5ded3718881f7e59bc2df15892c1a57bbf3babeb8f8b1606aefb4"
+    },
+    {
+      "path": "docs/reports/baseline-001/log.txt",
+      "size_bytes": 64616,
+      "sha256": "00ac2337087acca213a442963242db1906a3e3e3a54f78bee2c982e41a0003eb"
+    },
+    {
+      "path": "docs/reports/baseline-001/resolved-training-config.json",
+      "size_bytes": 7390,
+      "sha256": "b57c3a33249edb4e5fdfd828fb78383c7b4a4574e3706eb99f00f92cea766640"
+    },
+    {
+      "path": "runs/baseline-001/checkpoints/checkpoint0019.pth",
+      "size_bytes": 322522981,
+      "sha256": "a48b7e760bc273ed8ba52a6f749b0944d2e420e2393d71917fd01df99030d871"
+    },
+    {
+      "path": "data/raw/annotations/train_annotations.json",
+      "size_bytes": 32746579,
+      "sha256": "69f324c831b8a7aea5134c0e1b00f9484f6d1bdfb11e08a5b79c417dfb6bfe91"
+    },
+    {
+      "path": "data/raw/annotations/valid_annotations.json",
+      "size_bytes": 664327,
+      "sha256": "f63f5517379d8b00f2fec0c63afbaf77feb52c12f2048f2d423e65a075a3dce1"
+    },
+    {
+      "path": "data/raw/annotations/test_annotations.json",
+      "size_bytes": 328985,
+      "sha256": "266896d02238c69bae852a2f881a8a1cccaf39a764d46affa481184c79097ff2"
+    },
+    {
+      "path": "data/processed/selected_v0_1/annotations.json",
+      "size_bytes": 44560455,
+      "sha256": "37c2fb627c6e1c528061307efe760f8db384d5769bcfe85b76fc829abbd4b3bb"
+    },
+    {
+      "path": "data/processed/baseline_v1_0/annotations.json",
+      "size_bytes": 5176537,
+      "sha256": "c0fcf778fb5c1ce0aef9eb616b55e0721bbd0028e9cf8e7b5b132491f0787652"
+    },
+    {
+      "path": "artifacts/data-audit/roboflow-v13-train/audit_report/summary.json",
+      "size_bytes": 546,
+      "sha256": "ccc5c2df5a4b5fccddd42019b504564c7cb6d95e8792ed5fdfa5f8dfa0cce791"
+    },
+    {
+      "path": "artifacts/data-audit/roboflow-v13-train/audit_report/issues.csv",
+      "size_bytes": 301697,
+      "sha256": "cb83cf673e23a79e2412ba21efbc04124f0a098ed3d7312c2dbc63032603ea84"
+    }
+  ]
+}

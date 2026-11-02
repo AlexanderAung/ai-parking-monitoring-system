@@ -1,12 +1,12 @@
 # Baseline-001: RT-DETRv2 License-Plate Detection
 
-Alexander Aung Khant Bwar · Updated October 31, 2026 · Training run: September 26, 2026
+Alexander Aung Khant Bwar · Updated November 2, 2026 · Training run: September 26, 2026
 
 ## Overview
 
 **This baseline experiment** establishes a license-plate detection baseline for a planned AI parking monitoring system. An RT-DETRv2 detector with a ResNet-18 backbone was fine-tuned on **10,000 training images**, evaluated on **2,048 validation images**, and trained for 50 epochs on **one NVIDIA T4 GPU** in Kaggle.
 
-**The best checkpoint reached validation AP@[0.50:0.95] of 0.6565**, with AP50 of 0.9323. Independent test performance. The current experiment takes still images and returns plate bounding boxes and confidence scores.
+**The best checkpoint reached validation AP@[0.50:0.95] of 0.6565**, with AP50 of 0.9323. Independent test performance has not been measured. The current experiment takes still images and returns plate bounding boxes and confidence scores.
 
 **The question was practical:** what performance could this baseline configuration establish within the available GPU resources, and what should the next experiment investigate? No accuracy or speed target was predefined. The baseline provides a reference for subsequent comparisons.
 
@@ -26,11 +26,11 @@ Overall AP and size-specific AP@[0.50:0.95] are supported by the [epoch log](log
 
 ## Local re-evaluation and class mapping
 
-Checkpoint [checkpoint0019.pth](../../../runs/baseline-001/checkpoints/checkpoint0019.pth) was re-evaluated locally on CPU using its EMA weights, the configured 640 × 640 validation preprocessing, and 2,048 validation images containing 2,195 annotated boxes. The resulting overall AP and size-specific AP@[0.50:0.95] matched the training log at the reported precision. Local AR@100, averaged over IoU thresholds 0.50–0.95, was **0.736** at the evaluator’s displayed precision.
+The locally retained checkpoint `runs/baseline-001/checkpoints/checkpoint0019.pth` was re-evaluated locally on CPU using its EMA weights, the configured 640 × 640 validation preprocessing, and 2,048 validation images containing 2,195 annotated boxes. The resulting overall AP and size-specific AP@[0.50:0.95] matched the training log at the reported precision. Local AR@100, averaged over IoU thresholds 0.50–0.95, was **0.736** at the evaluator’s displayed precision.
 
 Size-specific AP50 and AP75 were extracted from the saved COCO precision array using a maximum of 100 detections per image, excluding unavailable entries before averaging.
 
-The first local evaluation produced zero AP and recall because the model predicted category `0`, while the [original local annotations](../../../data/raw/annotations/valid_annotations.json) used category `1`. Comparing the actual [Kaggle validation annotations](../../../data/raw/annotations/kaggle_val_annotations.json) with the original file confirmed that category IDs had been converted to `0`; image records, bounding boxes, areas, and other annotation fields were unchanged. Using the Kaggle annotation mapping resolved the mismatch.
+The first local evaluation produced zero AP and recall because the model predicted category `0`, while the original local annotations (`data/raw/annotations/valid_annotations.json`, not bundled) used category `1`. Comparing the actual [Kaggle validation annotations](../../../data/raw/annotations/kaggle_val_annotations.json) with the original file confirmed that category IDs had been converted to `0`; image records, bounding boxes, areas, and other annotation fields were unchanged. Using the Kaggle annotation mapping resolved the mismatch.
 
 The converted Kaggle file retains two category definitions sharing ID `0`. This metadata defect is documented in the [evaluation record](../../../runs/baseline-001/eval-epoch19/evaluation-config.md). The original category numbering was not inherently invalid; the problem was inconsistent mapping between dataset category IDs and the model’s internal class index.
 
@@ -44,7 +44,7 @@ More epochs did not improve the best result. Final AP was 0.6374, approximately 
 
 ## Findings from visual inspection
 
-[Ground-truth overlays](../../../runs/baseline-001/eval-epoch19/visual-checks/ground-truth-sizes/), [prediction images](../../../runs/baseline-001/eval-epoch19/visual-checks/predictions/), and [side-by-side comparisons](../../../runs/baseline-001/eval-epoch19/visual-checks/comparison/) were generated for the validation set. The following findings describe the inspected examples; generating all comparisons does not establish that every image was reviewed. Representative filenames and group observations are retained in the [visual review notes](../../../runs/baseline-001/eval-epoch19/visual-checks/review.md).
+Ground-truth overlays, prediction images, and side-by-side comparisons were generated for all 2,048 validation images. Full collections remain local under `runs/baseline-001/eval-epoch19/visual-checks/`; four [selected comparisons](figures/qualitative/README.md) are bundled. The following findings describe the inspected examples; generating all comparisons does not establish that every image was reviewed. Representative filenames and group observations are retained in the [visual review notes](../../../runs/baseline-001/eval-epoch19/visual-checks/review.md).
 
 - **Annotation quality limits interpretation.** Several large-plate annotations were excessively loose or incorrectly sized. Reviewed members of the `IMG_` and `pic_` groups were judged unacceptable, although their specific defects still require categorization. Oversized ground-truth boxes can also affect which COCO size group an instance belongs to.
 - **Quality and application relevance vary between groups.** Reviewed `xemay` images contained motorcycle plates and showed annotation-quality concerns. Motorcycle plates remain valid license-plate instances, but differ from the intended car-parking application. Reviewed `quandoi` examples appeared acceptable. `CarLongPlate8` had comparatively good annotation quality and was relevant to the parking-entry scenario.
@@ -98,4 +98,25 @@ The [metric extraction script](../../../scripts/extract_coco_metrics.py), [predi
 
 Historical training evidence remains available in the [training notebook](../../../notebooks/baseline-training.ipynb), [logged metrics](metrics.json), [epoch log](log.txt), and [resolved training configuration](resolved-training-config.json). Reproducing local evaluation is distinct from reproducing the original training run; the latter still requires the missing historical code and environment details.
 
-The [technical appendix](technical-appendix.md) contains the full audit, model and training settings, evaluation protocol, best/final metrics, historical Kaggle commands, and artifact inventory. Relative artifact links refer to the local workspace; their presence does not guarantee availability in the public repository. The [Kaggle notebook reference](https://www.kaggle.com/code/aungkhantbwar/rt-detr-baseline-training) provides an external entry point.
+The [technical appendix](technical-appendix.md) contains the full audit, model and training settings, evaluation protocol, best/final metrics, historical Kaggle commands, and artifact inventory. Repository links below refer to bundled evidence; external inputs are identified separately. The [Kaggle notebook reference](https://www.kaggle.com/code/aungkhantbwar/rt-detr-baseline-training) provides an external entry point.
+
+
+### Reproduce the metrics table
+
+From the repository root, install the project environment with `uv sync --locked`, then run:
+
+```bash
+.venv/bin/python scripts/extract_coco_metrics.py
+```
+
+This reads the bundled `eval.pth`; it does not rerun the model. The [evaluation record](../../../runs/baseline-001/eval-epoch19/evaluation-config.md) lists the versions used for the original local evaluation. The saved output contains evaluator-specific Python objects, so use a compatible environment and load only trusted artifacts.
+
+### Rerun inference or evaluation
+
+**Checkpoint and validation images are not bundled. Metrics can be extracted from the saved evaluation output; rerunning inference requires those external inputs.**
+
+Supply the exact checkpoint at `runs/baseline-001/checkpoints/checkpoint0019.pth` and the 2,048 validation images at `data/raw/valid/`, matching filenames in the bundled evaluated annotation JSON. Verify the checkpoint and annotation hashes against the [manifest](artifact-manifest.json). No checkpoint download is provided and no image-content manifest is included; obtaining a dataset export alone does not verify identical image contents.
+
+Run the CPU evaluation command in the [evaluation record](../../../runs/baseline-001/eval-epoch19/evaluation-config.md). It overwrites the evaluation output in the configured directory. For visualization, run `scripts/predict_validation.py`, `scripts/visualize_coco_sizes.py`, and then `scripts/compare_validation_images.py` with the project Python environment; their defaults use this baseline's paths.
+
+The active evaluation config now writes TensorBoard output under `eval-epoch19/tensorboard`. The frozen run snapshot retains the historical `evaluation-local/tensorboard` path. This is an output-location-only correction; model and evaluation settings are unchanged.

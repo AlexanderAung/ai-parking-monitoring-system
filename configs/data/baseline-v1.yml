@@ -17,7 +17,7 @@ train_dataloader:
   type: DataLoader
   dataset:
     type: CocoDetection
-    img_folder: /kaggle/input/datasets/aungkhantbwar/baseline/images/images
+    img_folder: 
     ann_file: /kaggle/input/datasets/aungkhantbwar/baseline/annotations.json
     return_masks: False
     transforms:

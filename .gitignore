@@ -1,5 +1,8 @@
 # Data folder 
-/data/raw/
+/data/raw/*
+!/data/raw/annotations/
+/data/raw/annotations/*
+!/data/raw/annotations/kaggle_val_annotations.json
 /data/processed
 /data/baseline_v1_0/images/
 /data/selected_v0_1/images/
@@ -19,7 +22,7 @@ __pycache__/
 *.py[codz]
 *$py.class
 *.pth
-
+!/runs/baseline-001/eval-epoch19/eval.pth
 # C extensions
 *.so
 

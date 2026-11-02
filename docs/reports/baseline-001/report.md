@@ -90,6 +90,8 @@ The main limits on interpreting this baseline are:
 
 ## Evidence and reproduction
 
+Four [selected qualitative comparisons with captions and dataset attribution](figures/qualitative/README.md) are included in this evidence package.
+
 The local evaluation record contains the [metrics and console summary](../../../runs/baseline-001/eval-epoch19/metrics.md), [evaluation configuration, software versions, and artifact hashes](../../../runs/baseline-001/eval-epoch19/evaluation-config.md), [saved COCO evaluation output](../../../runs/baseline-001/eval-epoch19/eval.pth), and [configuration snapshots](../../../runs/baseline-001/eval-epoch19/config-snapshot/). The frozen [run config](../../../runs/baseline-001/eval-epoch19/config-snapshot/configs/training/baseline-001-eval.yml) and [data config](../../../runs/baseline-001/eval-epoch19/config-snapshot/configs/data/baseline-v1-eval.yml) preserve the selected settings and their included YAML files.
 
 The [metric extraction script](../../../scripts/extract_coco_metrics.py), [prediction script](../../../scripts/predict_validation.py), and [comparison script](../../../scripts/compare_validation_images.py) support repeating the analysis. The [visual review notes](../../../runs/baseline-001/eval-epoch19/visual-checks/review.md) document the qualitative findings.

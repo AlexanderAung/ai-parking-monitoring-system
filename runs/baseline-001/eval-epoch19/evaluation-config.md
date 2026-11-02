@@ -6,8 +6,8 @@
 | Model/input | RT-DETRv2 with a ResNet-18 variant-d backbone and three decoder layers. Validation images are directly resized to 640 × 640, converted to float32, and pixel values scaled from 0–255 to 0–1. No letterboxing or channel mean/std normalization is configured.|
 | Runtime | Evaluation ran locally on CPU using the checkpoint’s EMA weights. Mixed precision was disabled (use_amp: False); inference used float32. |
 | Evaluation | Bounding-box evaluation on all 2,048 validation images, matching category IDs. IoU thresholds: 0.50–0.95 in increments of 0.05. AP uses 101 recall points from 0 to 1. Detection limits: 1, 10, and 100 per image; the reported AP table uses 100.|
-| Postprocessing | Class scores are calculated using sigmoid. The top 300 predictions per image are retained, with no fixed confidence-score cutoff and no non-maximum suppression (NMS). Predicted boxes are converted from normalized center coordinates to corner coordinates and scaled to the original image dimensions. COCO evaluation then applies its detection limits; the AP table uses 100.| 
-| Reproduction | Evaluation command and environment versions are recorded below. Configuration snapshots are retained with the results. Metrics are extracted using scripts/extract_coco_metrics.py.
+| Postprocessing | Class scores are calculated using sigmoid. The top 300 predictions per image are retained, with no fixed confidence-score cutoff and no non-maximum suppression (NMS). Predicted boxes are converted from normalized center coordinates to corner coordinates and scaled to the original image dimensions. COCO evaluation then applies its detection limits; the AP table uses 100.|
+| Reproduction | Evaluation command and environment versions are recorded below. Configuration snapshots are retained with the results. Metrics are extracted using scripts/extract_coco_metrics.py. |
 
 
 | Group | Annotation area, pixels² |
@@ -34,3 +34,8 @@
   --test-only \
   --device cpu
 ~~~
+
+
+The command runs from the repository root and overwrites the configured evaluation output. Checkpoint and validation images are not bundled. Metrics can be extracted from the saved evaluation output; rerunning inference requires those external inputs. See the [reproduction instructions](../../../docs/reports/baseline-001/report.md#reproduce-the-metrics-table).
+
+The active config now uses `runs/baseline-001/eval-epoch19/tensorboard` for `summary_dir`. The frozen run snapshot preserves the original `runs/baseline-001/evaluation-local/tensorboard`. This output-location-only correction does not change model, preprocessing, or evaluation settings. Frozen snapshots have not been edited.

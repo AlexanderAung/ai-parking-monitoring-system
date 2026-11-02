@@ -4,19 +4,17 @@ Alexander Aung Khant Bwar · Updated October 31, 2026 · Training run: September
 
 ## Overview
 
-This experiment establishes a license-plate detection baseline for a planned AI parking monitoring system. An RT-DETRv2 detector with a ResNet-18 backbone was fine-tuned on **10,000 training images**, evaluated on **2,048 validation images**, and trained for 50 epochs on **one NVIDIA T4 GPU** in Kaggle.
+**This baseline experiment** establishes a license-plate detection baseline for a planned AI parking monitoring system. An RT-DETRv2 detector with a ResNet-18 backbone was fine-tuned on **10,000 training images**, evaluated on **2,048 validation images**, and trained for 50 epochs on **one NVIDIA T4 GPU** in Kaggle.
 
-The best checkpoint reached **validation AP@[0.50:0.95] of 0.6565**, with AP50 of 0.9323. Independent test performance, live-video speed, and OCR quality have not been measured. The current experiment takes still images and returns plate bounding boxes and confidence scores; plate reading and parking operations remain future components.
+**The best checkpoint reached validation AP@[0.50:0.95] of 0.6565**, with AP50 of 0.9323. Independent test performance. The current experiment takes still images and returns plate bounding boxes and confidence scores.
 
-The question was practical: what performance could this configuration establish within the available GPU resources, and what should the next experiment investigate? No accuracy or speed target was predefined. The baseline provides a reference for subsequent comparisons.
+**The question was practical:** what performance could this baseline configuration establish within the available GPU resources, and what should the next experiment investigate? No accuracy or speed target was predefined. The baseline provides a reference for subsequent comparisons.
 
 **Navigate:** [Results](#results-and-interpretation) · [Local re-evaluation](#local-re-evaluation-and-class-mapping) · [Visual findings](#findings-from-visual-inspection) · [Approach](#approach-and-key-decisions) · [Limitations](#limitations-and-next-experiment) · [Evidence](#evidence-and-reproduction) · [Technical appendix](technical-appendix.md)
 
 ## Results and interpretation
 
 The selected checkpoint is from **epoch 20**. The log and checkpoint filename use zero-based index 19. Selection used the highest validation AP@[0.50:0.95] across the run.
-
-All scores below use a **0–1 scale**. Average precision (AP) summarizes the precision–recall curve. Intersection over union (IoU) measures the overlap between a predicted box and its ground-truth box. AP50 and AP75 use overlap thresholds of 0.50 and 0.75; the primary metric averages AP over thresholds from 0.50 to 0.95.
 
 | Metric | Overall | Small | Medium | Large |
 |---|---:|---:|---:|---:|

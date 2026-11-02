@@ -1,6 +1,6 @@
 ## Qualitative Review of Validation Annotations
 
-I individually did visual inspection to qualify annotation-quality issues and differences between the validation data and the intended use case. Below are my findings. 
+I individually did visual inspection to qualify annotation-quality issues and differences between the validation data and the intended use case. Below are my findings.
 
 
 ## Large plates
@@ -12,7 +12,7 @@ I individually did visual inspection to qualify annotation-quality issues and di
 
 #### `IMG_` image group
 
-This group contains images whose filenames start with `IMG_`,  pattern: `IMG_XXXX-conv`  
+This group contains images whose filenames start with `IMG_`,  pattern: `IMG_XXXX-conv`
 - example:
 `IMG_6987-conv_jpeg_jpg.rf.7986b7ca6b375d78bff5ad8fed4baf16.jpg`.
 - The annotations in the reviewed group members were all judged unacceptable. The specific defects require further categorization.
@@ -20,7 +20,7 @@ This group contains images whose filenames start with `IMG_`,  pattern: `IMG_XXX
 
 #### `pic_` image group
 
-This group contains images whose filenames start with `pic_`, pattern: `pic_XXX` 
+This group contains images whose filenames start with `pic_`, pattern: `pic_XXX`
 - Example: `pic_004_jpg.rf.7118b24ff92da96367d523c643555559.jpg`.
 - The annotations in the reviewed group members were all judged unacceptable. The specific defects require further categorization.
 

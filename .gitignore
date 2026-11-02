@@ -1,5 +1,8 @@
 # Data folder 
-/data/raw/
+/data/raw/*
+!/data/raw/annotations/
+/data/raw/annotations/*
+!/data/raw/annotations/kaggle_val_annotations.json
 /data/processed
 /data/baseline_v1_0/images/
 /data/selected_v0_1/images/
@@ -8,12 +11,18 @@ src/data/audit_inspection
 /visualized_valid/
 artifacts/visualizations/visualization-ground-truth
 artifacts/data-audit/roboflow-v13-train/audit_inspection
+artifacts/error-analysis/baseline-001/images
+runs/baseline-001/eval-epoch19/visual-checks/ground-truth
+runs/baseline-001/eval-epoch19/visual-checks/ground-truth-sizes
+runs/baseline-001/eval-epoch19/visual-checks/predictions
+runs/baseline-001/eval-epoch19/visual-checks/comparison
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
 *$py.class
 *.pth
-
+!/runs/baseline-001/eval-epoch19/eval.pth
 # C extensions
 *.so
 

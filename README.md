@@ -29,61 +29,66 @@ Dataset state is not fully reproducible from the current scripts without configu
 
 ## Model and configuration
 
-The main implementation is `RT-DETR/rtdetrv2_pytorch/`. It contains the RT-DETR/RT-DETRv2 model, COCO dataset/evaluator, training solver, and export utilities. The project-specific configuration is `RT-DETR/rtdetrv2_pytorch/configs/rtdetrv2/license_plate.yml`, which includes `configs/dataset/license_plate.yml` and shared model, optimizer, dataloader, and runtime YAML files.
+The detector implementation is in [thrid-party/RT-DETR/rtdetrv2_pytorch](thrid-party/RT-DETR/rtdetrv2_pytorch/). The active local [evaluation config](configs/training/baseline-001-eval.yml) includes the [data config](configs/data/baseline-v1-eval.yml) and shared model/runtime settings. It uses one class, a ResNet-18 variant-d backbone, three decoder layers, 640 × 640 inputs, and EMA weights.
 
-The license-plate config sets one class and a ResNet-18 variant backbone (`PResNet`, depth 18), a three-level `HybridEncoder`, and an RT-DETRv2 transformer decoder with three layers. It requests pretrained backbone weights, trains for 50 epochs, and uses batch size 8. Evaluation uses the COCO bounding-box evaluator. The dataset config currently names train/validation directories and annotation files under `/kaggle/input/datasets/aungkhantbwar/baseline/`; update these paths for another environment.
-
-## Setup, training, and evaluation
-
-Use Python 3.12 or newer as specified in the root `pyproject.toml`. The root dependencies include PyTorch, torchvision, COCO evaluation packages, PyYAML, and TensorBoard; RT-DETRv2 also provides `requirements.txt`.
-
-From the repository root, install the root project dependencies and enter the RT-DETRv2 implementation:
-
-```bash
-uv sync
-cd RT-DETR/rtdetrv2_pytorch
-```
-
-After editing the dataset paths in `configs/dataset/license_plate.yml`, train with:
-
-```bash
-python tools/train.py -c configs/rtdetrv2/license_plate.yml --seed 0
-```
-
-Evaluate a saved checkpoint against the configured validation set with:
-
-```bash
-python tools/train.py -c configs/rtdetrv2/license_plate.yml \
-  -r /path/to/checkpoint.pth --test-only
-```
-
-The script supports mixed precision (`--use-amp`), resume (`-r` without `--test-only`), and fine-tuning (`-t`). For multi-GPU training, use `torchrun` as documented in `RT-DETR/rtdetrv2_pytorch/README.md`. Checkpoints and logs are written under the configured output directory. The repository does not provide a project-specific end-to-end inference command for the parking application; the upstream RT-DETRv2 tools include export utilities.
+The original training run used batch size 8 and 50 epochs. Historical Kaggle configs and commands are retained as evidence, not as ready-to-run local training instructions. See the [technical appendix](docs/reports/baseline-001/technical-appendix.md#training-configuration-and-run-history).
 
 ## Recorded baseline
 
-`docs/experiments/baseline_error_analysis.md` records a baseline evaluation using the best checkpoint at epoch 19 on a validation set of 2,048 images:
+Checkpoint index 19 (20 completed epochs) was selected by validation AP and re-evaluated locally on 2,048 images containing 2,195 annotated boxes.
 
-| Metric | Score |
-| --- | ---: |
-| COCO mAP@[0.50:0.95] | 0.656 |
-| AP50 | 0.932 |
-| AP75 | 0.771 |
-| AP (small / medium / large) | 0.389 / 0.771 / 0.681 |
+| Metric | Overall | Small | Medium | Large |
+|---|---:|---:|---:|---:|
+| AP50 | 0.9323 | 0.7363 | 0.9802 | 0.9487 |
+| AP75 | 0.7714 | 0.4311 | 0.8620 | 0.7577 |
+| AP50:95 | 0.6565 | 0.4189 | 0.7143 | 0.6686 |
 
-These are repository-recorded values; the checkpoint and complete training logs are not included here, so the run cannot be independently reproduced from this repository alone.
+AR@100 averaged over IoU 0.50–0.95 is 0.7357 (0.736 in the console summary). Size groups use COCO annotation-area ranges in original-image pixels squared.
 
-## Limitations and next components
+The [baseline report](docs/reports/baseline-001/report.md) documents the category-ID mismatch and its resolution, annotation-quality limitations, and sampled prediction review. [Selected comparisons and dataset attribution](docs/reports/baseline-001/figures/qualitative/README.md) provide visual evidence. Reviewed examples showed no systematic box shifts or stretching; this is not proof for every image.
 
-- The implemented task is license-plate detection, not parking-space occupancy monitoring.
-- Dataset paths are machine-specific; the preparation scripts use hard-coded relative paths and sampling defaults that differ from the older dataset design note.
-- The experiment record has metrics but no saved checkpoint or detailed error analysis in the repository.
-- No explicit implementation or finalized roadmap for downstream parking features was found. Natural follow-on work—still unimplemented—is to connect detections to video/camera input, add parking-space occupancy logic, and define any required plate OCR or monitoring interface.
+## Reproduce the metrics table
+
+Use Python 3.12 or newer as specified by the project. From the repository root:
+
+```bash
+uv sync --locked
+.venv/bin/python scripts/extract_coco_metrics.py
+```
+
+This extracts the table from the bundled evaluation output without running inference. The [evaluation record](runs/baseline-001/eval-epoch19/evaluation-config.md) lists the original local environment versions. Load only trusted saved evaluation files.
+
+## Rerun evaluation
+
+**Checkpoint and validation images are not bundled. Metrics can be extracted from the saved evaluation output; rerunning inference requires those external inputs.**
+
+Supply the checkpoint at `runs/baseline-001/checkpoints/checkpoint0019.pth` and the 2,048 validation images at `data/raw/valid/`. Use the bundled `data/raw/annotations/kaggle_val_annotations.json`, which preserves the category mapping used during training-time evaluation. Verify the checkpoint and annotation hashes using the [artifact manifest](docs/reports/baseline-001/artifact-manifest.json). No checkpoint download or full image-content manifest is provided.
+
+```bash
+.venv/bin/python thrid-party/RT-DETR/rtdetrv2_pytorch/tools/train.py \
+  -c configs/training/baseline-001-eval.yml \
+  -r runs/baseline-001/checkpoints/checkpoint0019.pth \
+  --test-only \
+  --device cpu
+```
+
+This evaluates the configured validation split, not an independent test split, and overwrites evaluation output in the configured directory. [Prediction](scripts/predict_validation.py), [ground-truth visualization](scripts/visualize_coco_sizes.py), and [comparison](scripts/compare_validation_images.py) scripts can regenerate the full local visual review outputs once the required inputs are present.
+
+## Limitations and next work
+
+- Annotation defects and domain differences limit interpretation of the baseline scores. Structured annotation auditing and quantitative error analysis remain future work.
+- Historical training-code/environment details are incomplete and training was not explicitly seeded. Recreating the metrics table is distinct from reproducing the original training run.
+- Dataset selection scripts still require path and sampling-setting review before reuse.
+- Independent test performance, representative CCTV evaluation, latency, tracking, OCR, and parking occupancy are not established by this baseline.
 
 ## Repository map
 
 ```text
-RT-DETR/rtdetrv2_pytorch/        Main detector, configs, train/eval/export tools
-src/parking_monitoring/data/     Dataset audit and selection utilities
-scripts/                         COCO annotation visualization helper
-docs/                            Dataset decisions and baseline experiment notes
+thrid-party/RT-DETR/rtdetrv2_pytorch/  Detector implementation
+configs/                            Project configs
+src/parking_monitoring/data/         Dataset audit and selection utilities
+scripts/                            Metric extraction and visualizations
+docs/reports/baseline-001/           Baseline report and selected evidence
+docs/templates/                     Templates, not measured experiment results
+runs/baseline-001/eval-epoch19/       Saved evaluation, metrics, and config snapshots
 ```

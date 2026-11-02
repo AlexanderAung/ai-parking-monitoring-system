@@ -1,45 +1,58 @@
 # Baseline-001: RT-DETRv2 License-Plate Detection
 
-Alexander Aung Khant Bwar · October 27, 2026 · Training run: September 26, 2026
+Alexander Aung Khant Bwar · Updated November 2, 2026 · Training run: September 26, 2026
 
 ## Overview
 
-This experiment establishes a license-plate detection baseline for a planned AI parking monitoring system. An RT-DETRv2 detector with a ResNet-18 backbone was fine-tuned on **10,000 training images**, evaluated on **2,048 validation images**, and trained for 50 epochs on **one NVIDIA T4 GPU** in Kaggle.
+**This baseline experiment** establishes a license-plate detection baseline for a planned AI parking monitoring system. An RT-DETRv2 detector with a ResNet-18 backbone was fine-tuned on **10,000 training images**, evaluated on **2,048 validation images**, and trained for 50 epochs on **one NVIDIA T4 GPU** in Kaggle.
 
-The best checkpoint reached **validation AP@[0.50:0.95] of 0.6565**, with AP50 of 0.9323. Independent test performance, live-video speed, and OCR quality have not been measured. The current experiment takes still images and returns plate bounding boxes and confidence scores; plate reading and parking operations remain future components.
+**The best checkpoint reached validation AP@[0.50:0.95] of 0.6565**, with AP50 of 0.9323. Independent test performance has not been measured. The current experiment takes still images and returns plate bounding boxes and confidence scores.
 
-The question was practical: what performance could this configuration establish within the available GPU resources, and what should the next experiment investigate? No accuracy or speed target was predefined. The baseline provides a reference for subsequent comparisons.
+**The question was practical:** what performance could this baseline configuration establish within the available GPU resources, and what should the next experiment investigate? No accuracy or speed target was predefined. The baseline provides a reference for subsequent comparisons.
 
-**Navigate:** [Results](#results-and-interpretation) · [Approach](#approach-and-key-decisions) · [Limitations](#limitations-and-next-experiment) · [Technical appendix](technical-appendix.md)
+**Navigate:** [Results](#results-and-interpretation) · [Local re-evaluation](#local-re-evaluation-and-class-mapping) · [Visual findings](#findings-from-visual-inspection) · [Approach](#approach-and-key-decisions) · [Limitations](#limitations-and-next-experiment) · [Evidence](#evidence-and-reproduction) · [Technical appendix](technical-appendix.md)
 
 ## Results and interpretation
 
 The selected checkpoint is from **epoch 20**. The log and checkpoint filename use zero-based index 19. Selection used the highest validation AP@[0.50:0.95] across the run.
 
-All scores below use a **0–1 scale**. Average precision (AP) summarizes the precision–recall curve. Intersection over union (IoU) measures the overlap between a predicted box and its ground-truth box. AP50 and AP75 use overlap thresholds of 0.50 and 0.75; the primary metric averages AP over thresholds from 0.50 to 0.95.
+| Metric | Overall | Small | Medium | Large |
+|---|---:|---:|---:|---:|
+| AP50 | 0.9323 | 0.7363 | 0.9802 | 0.9487 |
+| AP75 | 0.7714 | 0.4311 | 0.8620 | 0.7577 |
+| AP50:95 | 0.6565 | 0.4189 | 0.7143 | 0.6686 |
 
-| Validation metric | Best checkpoint |
-|---|---:|
-| AP@[0.50:0.95] | **0.6565** |
-| AP50 | 0.9323 |
-| AP75 | 0.7714 |
-| AP small | 0.4189 |
-| AP medium | 0.7143 |
-| AP large | 0.6686 |
+Overall AP and size-specific AP@[0.50:0.95] are supported by the [epoch log](log.txt) and reproduced [local evaluation metrics](../../../runs/baseline-001/eval-epoch19/metrics.md). Size-specific AP50 and AP75 were extracted from the local [COCO evaluation output](../../../runs/baseline-001/eval-epoch19/eval.pth). Small, medium, and large follow the [recorded COCO annotation-area ranges](../../../runs/baseline-001/eval-epoch19/evaluation-config.md) in original-image pixels, which differ from the relative-area thresholds used during training-data selection.
 
-Source: [extracted metrics](metrics.json), backed by the [epoch log](log.txt). Small, medium, and large follow COCO's pixel-area categories, which differ from the relative-area thresholds used during training-data selection.
+## Local re-evaluation and class mapping
+
+The locally retained checkpoint `runs/baseline-001/checkpoints/checkpoint0019.pth` was re-evaluated locally on CPU using its EMA weights, the configured 640 × 640 validation preprocessing, and 2,048 validation images containing 2,195 annotated boxes. The resulting overall AP and size-specific AP@[0.50:0.95] matched the training log at the reported precision. Local AR@100, averaged over IoU thresholds 0.50–0.95, was **0.736** at the evaluator’s displayed precision.
+
+Size-specific AP50 and AP75 were extracted from the saved COCO precision array using a maximum of 100 detections per image, excluding unavailable entries before averaging.
+
+The first local evaluation produced zero AP and recall because the model predicted category `0`, while the original local annotations (`data/raw/annotations/valid_annotations.json`, not bundled) used category `1`. Comparing the actual [Kaggle validation annotations](../../../data/raw/annotations/kaggle_val_annotations.json) with the original file confirmed that category IDs had been converted to `0`; image records, bounding boxes, areas, and other annotation fields were unchanged. Using the Kaggle annotation mapping resolved the mismatch.
+
+The converted Kaggle file retains two category definitions sharing ID `0`. This metadata defect is documented in the [evaluation record](../../../runs/baseline-001/eval-epoch19/evaluation-config.md). The original category numbering was not inherently invalid; the problem was inconsistent mapping between dataset category IDs and the model’s internal class index.
 
 ![Training loss and validation detection metrics over 50 completed epochs](figures/training-curves.png)
 
 *Training loss and validation metrics across 50 completed epochs. The selected checkpoint occurs at epoch 20; the final checkpoint has lower primary AP. Validation loss was not recorded.*
 
-Three observations guide the next investigation:
+Small plates are the weakest evaluated size group: AP@[0.50:0.95] is 0.4189, compared with 0.7143 for medium plates. Scores also decrease under stricter overlap requirements. The visual review below provides qualitative evidence about these gaps; it does not quantify their causes.
 
-- **Small plates are the weakest evaluated size group.** AP small is 0.4189, compared with 0.7143 for medium plates. Reviewing small-plate predictions can help distinguish missed detections, confidence issues, and box-alignment errors.
-- **Scores decrease under stricter overlap requirements.** AP75 is lower than AP50. Inspecting predicted boxes is necessary to understand the gap; the aggregate scores alone do not identify the cause.
-- **More epochs did not improve the best result.** Final AP is 0.6374, approximately 0.0190 below the peak, while training loss continues to decrease overall. This supports retaining the earlier checkpoint, but does not by itself prove overfitting.
+More epochs did not improve the best result. Final AP was 0.6374, approximately 0.0190 below the peak, while training loss continued to decrease overall. This supports retaining checkpoint 19, but does not by itself prove overfitting.
 
-These results identify useful questions. Prediction-level error analysis is still pending, so explanations involving blur, lighting, occlusion, or camera angle remain untested.
+## Findings from visual inspection
+
+Ground-truth overlays, prediction images, and side-by-side comparisons were generated for all 2,048 validation images. Full collections remain local under `runs/baseline-001/eval-epoch19/visual-checks/`; four [selected comparisons](figures/qualitative/README.md) are bundled. The following findings describe the inspected examples; generating all comparisons does not establish that every image was reviewed. Representative filenames and group observations are retained in the [visual review notes](../../../runs/baseline-001/eval-epoch19/visual-checks/review.md).
+
+- **Annotation quality limits interpretation.** Several large-plate annotations were excessively loose or incorrectly sized. Reviewed members of the `IMG_` and `pic_` groups were judged unacceptable, although their specific defects still require categorization. Oversized ground-truth boxes can also affect which COCO size group an instance belongs to.
+- **Quality and application relevance vary between groups.** Reviewed `xemay` images contained motorcycle plates and showed annotation-quality concerns. Motorcycle plates remain valid license-plate instances, but differ from the intended car-parking application. Reviewed `quandoi` examples appeared acceptable. `CarLongPlate8` had comparatively good annotation quality and was relevant to the parking-entry scenario.
+- **Large-plate predictions were generally well aligned in the reviewed examples.** Some predicted boxes fitted the visible plate more accurately than the supplied ground truth. Such cases demonstrate why disagreement with an annotation is not automatically a model failure.
+- **Medium- and small-plate predictions were often somewhat loose.** Small absolute boundary errors can substantially reduce IoU for small objects. This observation is consistent with small-plate AP decreasing from 0.7363 at IoU 0.50 to 0.4311 at IoU 0.75, but does not establish how much of the gap is caused by model localization versus annotation quality.
+- **No systematic shifts or stretching were observed.** The reviewed comparisons support correct conversion of predicted boxes back to original-image coordinates. This is a sampled visual finding rather than proof for every validation image.
+
+Prediction visualizations displayed scores above **0.6**. This threshold was used only for visual inspection; AP evaluation applied no fixed confidence cutoff. The review has not yet quantified annotation-error prevalence or model failure rates. Explanations involving blur, lighting, occlusion, or camera angle have not been systematically tested.
 
 ## Approach and key decisions
 
@@ -57,7 +70,7 @@ The audit recorded zero error-level findings and 2,278 warnings. Warnings flag c
 
 Selection removed unannotated and multiple-box images, then retained boxes between the single-box population's 5th and 95th relative-area percentiles. This left **86,085 candidate images**. Proportional sampling across five equal-width relative-area bins produced the 10,000-image baseline, using sampling seed 42.
 
-This creates a bounded starting dataset, but reduces coverage of multiple-plate scenes and extreme plate sizes relevant to CCTV. The original validation split remained intact. Source training images already included augmentations; those are separate from the transformations applied during fine-tuning.
+This creates a bounded starting dataset, but reduces coverage of multiple-plate scenes and extreme plate sizes relevant to CCTV. Validation split membership was preserved; category IDs were normalized for the single-class pipeline as described above. Source training images already included augmentations; those are separate from the transformations applied during fine-tuning.
 
 ### Fit the available hardware
 
@@ -69,21 +82,41 @@ The completed run used 640 × 640 inputs, training batch size 8, and AdamW for 5
 
 The main limits on interpreting this baseline are:
 
-- **Data independence and coverage:** cross-split duplicate/source relationships remain unchecked, label correctness is unquantified, and filtering excludes some relevant CCTV conditions.
-- **Evaluation scope:** validation selected the checkpoint. There is no independent test result, reviewed prediction set, representative CCTV benchmark, OCR assessment, or measured detector latency/FPS.
-- **Reproduction and variability:** the historical training revision, full environment, and uploaded annotation conversion are incomplete. Training randomness was not explicitly seeded; sampling seed 42 applies only to dataset selection. There are no repeated runs or uncertainty estimates.
+- **Annotation quality and coverage:** visual review identified unreliable boxes and differences from the target application. Their prevalence remains unquantified. Training-set annotation quality and cross-split duplicate/source relationships remain unchecked.
+- **Evaluation scope:** the checkpoint was selected using validation performance. Qualitative prediction review is complete for the inspected examples, but systematic failure counts, independent test evaluation, representative CCTV testing, OCR assessment, and latency measurements remain outstanding.
+- **Reproduction and variability:** local evaluation settings, software versions, checkpoint and annotation hashes, and configuration snapshots are preserved. Historical training-code and environment details remain incomplete. Training randomness was not explicitly seeded, and no repeated-run variability or uncertainty estimates are available.
 
-The following work is proposed, not completed:
-
-1. **Resolve data questions.** Preserve the actual Kaggle annotations and historical code, verify class mapping, and check cross-split duplicates and source relationships. Local annotations use plate category ID 1 with an unused ID 0 entry, while the configuration specifies one model class.
-2. **Review model mistakes.** Inspect validation predictions, prioritizing small plates, and record examples of misses, false positives, and poorly aligned boxes. Separate model failures from possible annotation issues.
-3. **Run one controlled comparison.** Use the reviewed errors to select one training change, record its hypothesis beforehand, and keep the comparison protocol fixed. The evidence does not yet justify choosing a specific intervention.
-4. **Assess intended use.** Evaluate the frozen selected model on a verified independent test split and representative CCTV frames. Measure detector latency separately from OCR and video handling.
+> The baseline is reproducible under the recorded local evaluation setup, with known annotation-quality limitations. Its metrics provide a reference for future comparisons, but should not be interpreted as accuracy against a fully verified ground-truth set. A structured validation-annotation audit and a separate training-data audit should precede decisions about model changes.
 
 ## Evidence and reproduction
 
-The [training notebook](../../../notebooks/baseline-training.ipynb), [metrics](metrics.json), and [configuration snapshot](resolved-training-config.json) support inspection of the completed run. The [error-analysis document](error_analysis.md) records the current status of prediction review.
+Four [selected qualitative comparisons with captions and dataset attribution](figures/qualitative/README.md) are included in this evidence package.
 
-Exact reproduction still requires resolving the missing historical details and updating environment-specific paths and configuration includes. The snapshot is a record of the run, not a ready-to-run local configuration.
+The local evaluation record contains the [metrics and console summary](../../../runs/baseline-001/eval-epoch19/metrics.md), [evaluation configuration, software versions, and artifact hashes](../../../runs/baseline-001/eval-epoch19/evaluation-config.md), [saved COCO evaluation output](../../../runs/baseline-001/eval-epoch19/eval.pth), and [configuration snapshots](../../../runs/baseline-001/eval-epoch19/config-snapshot/). The frozen [run config](../../../runs/baseline-001/eval-epoch19/config-snapshot/configs/training/baseline-001-eval.yml) and [data config](../../../runs/baseline-001/eval-epoch19/config-snapshot/configs/data/baseline-v1-eval.yml) preserve the selected settings and their included YAML files.
 
-The [technical appendix](technical-appendix.md) contains the full audit, model and training settings, evaluation protocol, best/final metrics, historical Kaggle commands, and artifact inventory. Relative artifact links refer to the local workspace; their presence does not guarantee availability in the public repository. The [Kaggle notebook reference](https://www.kaggle.com/code/aungkhantbwar/rt-detr-baseline-training) provides an external entry point.
+The [metric extraction script](../../../scripts/extract_coco_metrics.py), [prediction script](../../../scripts/predict_validation.py), and [comparison script](../../../scripts/compare_validation_images.py) support repeating the analysis. The [visual review notes](../../../runs/baseline-001/eval-epoch19/visual-checks/review.md) document the qualitative findings.
+
+Historical training evidence remains available in the [training notebook](../../../notebooks/baseline-training.ipynb), [logged metrics](metrics.json), [epoch log](log.txt), and [resolved training configuration](resolved-training-config.json). Reproducing local evaluation is distinct from reproducing the original training run; the latter still requires the missing historical code and environment details.
+
+The [technical appendix](technical-appendix.md) contains the full audit, model and training settings, evaluation protocol, best/final metrics, historical Kaggle commands, and artifact inventory. Repository links below refer to bundled evidence; external inputs are identified separately. The [Kaggle notebook reference](https://www.kaggle.com/code/aungkhantbwar/rt-detr-baseline-training) provides an external entry point.
+
+
+### Reproduce the metrics table
+
+From the repository root, install the project environment with `uv sync --locked`, then run:
+
+```bash
+.venv/bin/python scripts/extract_coco_metrics.py
+```
+
+This reads the bundled `eval.pth`; it does not rerun the model. The [evaluation record](../../../runs/baseline-001/eval-epoch19/evaluation-config.md) lists the versions used for the original local evaluation. The saved output contains evaluator-specific Python objects, so use a compatible environment and load only trusted artifacts.
+
+### Rerun inference or evaluation
+
+**Checkpoint and validation images are not bundled. Metrics can be extracted from the saved evaluation output; rerunning inference requires those external inputs.**
+
+Supply the exact checkpoint at `runs/baseline-001/checkpoints/checkpoint0019.pth` and the 2,048 validation images at `data/raw/valid/`, matching filenames in the bundled evaluated annotation JSON. Verify the checkpoint and annotation hashes against the [manifest](artifact-manifest.json). No checkpoint download is provided and no image-content manifest is included; obtaining a dataset export alone does not verify identical image contents.
+
+Run the CPU evaluation command in the [evaluation record](../../../runs/baseline-001/eval-epoch19/evaluation-config.md). It overwrites the evaluation output in the configured directory. For visualization, run `scripts/predict_validation.py`, `scripts/visualize_coco_sizes.py`, and then `scripts/compare_validation_images.py` with the project Python environment; their defaults use this baseline's paths.
+
+The active evaluation config now writes TensorBoard output under `eval-epoch19/tensorboard`. The frozen run snapshot retains the historical `evaluation-local/tensorboard` path. This is an output-location-only correction; model and evaluation settings are unchanged.

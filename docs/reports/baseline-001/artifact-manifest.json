@@ -1,60 +1,133 @@
 {
-  "note": "Hashes identify local evidence inspected when preparing this report. Annotation hashes do not hash the corresponding image contents or prove identity with the Kaggle upload.",
+  "note": "Hashes identify the listed file contents, not all validation image contents. Repository availability denotes files included or prepared for inclusion in this evidence package; local-only artifacts are not bundled. Historical artifact records are retained.",
   "artifacts": [
     {
       "path": "notebooks/baseline-training.ipynb",
       "size_bytes": 657998,
-      "sha256": "476e402749b5ded3718881f7e59bc2df15892c1a57bbf3babeb8f8b1606aefb4"
+      "sha256": "476e402749b5ded3718881f7e59bc2df15892c1a57bbf3babeb8f8b1606aefb4",
+      "availability": "repository"
     },
     {
       "path": "docs/reports/baseline-001/log.txt",
       "size_bytes": 64616,
-      "sha256": "00ac2337087acca213a442963242db1906a3e3e3a54f78bee2c982e41a0003eb"
+      "sha256": "00ac2337087acca213a442963242db1906a3e3e3a54f78bee2c982e41a0003eb",
+      "availability": "repository"
     },
     {
       "path": "docs/reports/baseline-001/resolved-training-config.json",
       "size_bytes": 7390,
-      "sha256": "b57c3a33249edb4e5fdfd828fb78383c7b4a4574e3706eb99f00f92cea766640"
+      "sha256": "b57c3a33249edb4e5fdfd828fb78383c7b4a4574e3706eb99f00f92cea766640",
+      "availability": "repository"
     },
     {
       "path": "runs/baseline-001/checkpoints/checkpoint0019.pth",
       "size_bytes": 322522981,
-      "sha256": "a48b7e760bc273ed8ba52a6f749b0944d2e420e2393d71917fd01df99030d871"
+      "sha256": "a48b7e760bc273ed8ba52a6f749b0944d2e420e2393d71917fd01df99030d871",
+      "availability": "local-only"
     },
     {
       "path": "data/raw/annotations/train_annotations.json",
       "size_bytes": 32746579,
-      "sha256": "69f324c831b8a7aea5134c0e1b00f9484f6d1bdfb11e08a5b79c417dfb6bfe91"
+      "sha256": "69f324c831b8a7aea5134c0e1b00f9484f6d1bdfb11e08a5b79c417dfb6bfe91",
+      "availability": "local-only"
     },
     {
       "path": "data/raw/annotations/valid_annotations.json",
       "size_bytes": 664327,
-      "sha256": "f63f5517379d8b00f2fec0c63afbaf77feb52c12f2048f2d423e65a075a3dce1"
+      "sha256": "f63f5517379d8b00f2fec0c63afbaf77feb52c12f2048f2d423e65a075a3dce1",
+      "availability": "local-only"
     },
     {
       "path": "data/raw/annotations/test_annotations.json",
       "size_bytes": 328985,
-      "sha256": "266896d02238c69bae852a2f881a8a1cccaf39a764d46affa481184c79097ff2"
+      "sha256": "266896d02238c69bae852a2f881a8a1cccaf39a764d46affa481184c79097ff2",
+      "availability": "local-only"
     },
     {
       "path": "data/processed/selected_v0_1/annotations.json",
       "size_bytes": 44560455,
-      "sha256": "37c2fb627c6e1c528061307efe760f8db384d5769bcfe85b76fc829abbd4b3bb"
+      "sha256": "37c2fb627c6e1c528061307efe760f8db384d5769bcfe85b76fc829abbd4b3bb",
+      "availability": "local-only"
     },
     {
       "path": "data/processed/baseline_v1_0/annotations.json",
       "size_bytes": 5176537,
-      "sha256": "c0fcf778fb5c1ce0aef9eb616b55e0721bbd0028e9cf8e7b5b132491f0787652"
+      "sha256": "c0fcf778fb5c1ce0aef9eb616b55e0721bbd0028e9cf8e7b5b132491f0787652",
+      "availability": "local-only"
     },
     {
       "path": "artifacts/data-audit/roboflow-v13-train/audit_report/summary.json",
       "size_bytes": 546,
-      "sha256": "ccc5c2df5a4b5fccddd42019b504564c7cb6d95e8792ed5fdfa5f8dfa0cce791"
+      "sha256": "ccc5c2df5a4b5fccddd42019b504564c7cb6d95e8792ed5fdfa5f8dfa0cce791",
+      "availability": "repository"
     },
     {
       "path": "artifacts/data-audit/roboflow-v13-train/audit_report/issues.csv",
       "size_bytes": 301697,
-      "sha256": "cb83cf673e23a79e2412ba21efbc04124f0a098ed3d7312c2dbc63032603ea84"
+      "sha256": "cb83cf673e23a79e2412ba21efbc04124f0a098ed3d7312c2dbc63032603ea84",
+      "availability": "repository"
+    },
+    {
+      "path": "runs/baseline-001/eval-epoch19/eval.pth",
+      "size_bytes": 324699,
+      "sha256": "f2743115fd4d37229fab822a5aeb5a4e65a52a772ebab6f4e29fc4c305893b34",
+      "availability": "repository"
+    },
+    {
+      "path": "data/raw/annotations/kaggle_val_annotations.json",
+      "size_bytes": 1076398,
+      "sha256": "fc3b9de67de3b999ddb6ae66e86eec3ff12ed4e2763de977780c751457d11f0d",
+      "availability": "repository"
+    },
+    {
+      "path": "docs/reports/baseline-001/figures/qualitative/00b6f96c840767fa_jpg.rf.633b5af0bbe4e4cb5abb5cf5236c3140.jpg",
+      "size_bytes": 439119,
+      "sha256": "9e3544855aed11965ee055973b30eca2b61314cff8dc8d197208df9022325d64",
+      "availability": "repository",
+      "derived_from": "runs/baseline-001/eval-epoch19/visual-checks/comparison/00b6f96c840767fa_jpg.rf.633b5af0bbe4e4cb5abb5cf5236c3140.jpg"
+    },
+    {
+      "path": "docs/reports/baseline-001/figures/qualitative/CarLongPlate8_jpg.rf.6e8c01c850c41861aa2366a73d331e05.jpg",
+      "size_bytes": 111010,
+      "sha256": "8a190a2c77ee1ddf04b535e13677fb1b587f515d670b78bd0a6e0603f6ef0c37",
+      "availability": "repository",
+      "derived_from": "runs/baseline-001/eval-epoch19/visual-checks/comparison/CarLongPlate8_jpg.rf.6e8c01c850c41861aa2366a73d331e05.jpg"
+    },
+    {
+      "path": "docs/reports/baseline-001/figures/qualitative/quandoi23_jpg.rf.e09ebc1a704ff51e0d6f48e99fe35435.jpg",
+      "size_bytes": 60003,
+      "sha256": "c2d3665d3bc5a45c57a68e72e04e3c23b237b5dff33b754c232cb02b95b7ad69",
+      "availability": "repository",
+      "derived_from": "runs/baseline-001/eval-epoch19/visual-checks/comparison/quandoi23_jpg.rf.e09ebc1a704ff51e0d6f48e99fe35435.jpg"
+    },
+    {
+      "path": "docs/reports/baseline-001/figures/qualitative/xemay13_jpg.rf.e5165c7fc425b4f01ef45ef819b4e766.jpg",
+      "size_bytes": 93812,
+      "sha256": "9920b057b81ef0f83166f7e861cb8fcbd82db9a841d63277bd78fda3f8f76d3b",
+      "availability": "repository",
+      "derived_from": "runs/baseline-001/eval-epoch19/visual-checks/comparison/xemay13_jpg.rf.e5165c7fc425b4f01ef45ef819b4e766.jpg"
+    }
+  ],
+  "dataset_attribution": {
+    "title": "License Plate Recognition",
+    "provider": "Roboflow Universe Projects",
+    "version": "13",
+    "source_url": "https://universe.roboflow.com/roboflow-universe-projects/license-plate-recognition-rxg4e/dataset/13",
+    "license": "CC BY 4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "attribution_file": "docs/reports/baseline-001/figures/qualitative/README.md",
+    "modifications": "Evaluated annotations retain the historical category-ID conversion to 0. Comparison images add annotation and prediction overlays and side-by-side layout."
+  },
+  "external_inputs": [
+    {
+      "path": "runs/baseline-001/checkpoints/checkpoint0019.pth",
+      "availability": "local-only",
+      "purpose": "Required to rerun inference or evaluation; hash recorded in artifacts."
+    },
+    {
+      "path": "data/raw/valid/",
+      "availability": "local-only",
+      "purpose": "Full set of 2,048 validation images required to rerun inference or evaluation; image-content hashes are not included."
     }
   ]
 }

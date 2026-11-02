@@ -26,5 +26,3 @@ for name, iou in [("AP50", 0.50), ("AP75", 0.75), ("AP50:95", None)]:
         cells.append(f"{valid.mean():.4f}" if valid.size else "N/A")
 
     print("| " + " | ".join([name, *cells]) + " |")
-
-

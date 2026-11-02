@@ -30,7 +30,7 @@ This appendix preserves the technical record behind the license-plate detection 
 | Model | RT-DETRv2 with a ResNet-18 variant-d (`PResNet`) backbone |
 | Dataset | Roboflow License Plate Recognition v13; derived training subset `baseline_v1_0` |
 | Platform | Kaggle, one NVIDIA T4 GPU |
-| Primary evidence | [Notebook](../../../notebooks/baseline-training.ipynb), [epoch log](log.txt), [configuration snapshot](resolved-training-config.json), and [checkpoint](../../../runs/baseline-001/checkpoints/checkpoint0019.pth) |
+| Primary evidence | [Notebook](../../../notebooks/baseline-training.ipynb), [epoch log](log.txt), [configuration snapshot](resolved-training-config.json), and local-only checkpoint (`runs/baseline-001/checkpoints/checkpoint0019.pth`) |
 
 ## Experiment scope and model choice
 

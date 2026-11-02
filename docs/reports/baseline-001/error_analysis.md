@@ -1,4 +1,5 @@
-# RT-DETR License Plate Detection — Error Analysis
+# RT-DETR License Plate Detection — Error Analysis Template, NOT REAL REPORT!
+
 
 **Author:** Alexander Aung Khant Bwar
 **Date:** 2026-10-31  

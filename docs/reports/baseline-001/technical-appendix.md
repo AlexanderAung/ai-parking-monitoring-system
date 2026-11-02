@@ -119,11 +119,11 @@ The sampling script's current 100-image setting was used for inspection, and mus
 
 ### Visual inspection
 
-Visually inspected sampled images and observed very small and very large plate instances. No manual annotation corrections were made. No per-image review record or quantified annotation-error estimate was recorded. Observations of plate sizes concern ground-truth data inspection, not model prediction errors.
+Initial training-data inspection observed very small and very large plate instances without manual annotation corrections or a quantified error estimate. Subsequent validation review documented representative filenames, annotation concerns, and prediction comparisons in the [visual review notes](../../../runs/baseline-001/eval-epoch19/visual-checks/review.md).
 
 ### Class mapping and split independence
 
-Local annotations use category ID 1 for plate boxes, and the category metadata also contains an unused ID 0 entry. The saved run configuration specifies one model class with `remap_mscoco_category: false`. 
+Original local annotations use category ID 1 for plate boxes and contain an unused category ID 0. The evaluated Kaggle annotations converted category IDs to 0, matching the one-class model with `remap_mscoco_category: false`. Comparison confirmed unchanged image records, boxes, areas, and other annotation fields. The converted file retains two category definitions sharing ID 0; this defect is preserved and documented to reproduce the evaluation. Using original ID-1 labels initially produced zero metrics; using the Kaggle mapping reproduced the baseline.
 
 Cross-split exact/perceptual duplicate checks and grouping by source image, camera, vehicle, or video were not recorded. Split independence remains unverified.
 
@@ -243,17 +243,21 @@ One completed baseline training history is documented. No independent-seed repet
 
 ## Prediction review status
 
-Ground-truth sample inspection identified very small and large plate instances, and no labels were corrected. This is a dataset observation rather than an analysis of model mistakes. No reviewed prediction set or quantified false-positive, missed-detection, or localization-error breakdown was recorded.
+Ground-truth overlays and predictions were generated for all 2,048 validation images. The inspected comparisons showed loose or unreliable annotations, generally well-aligned large-plate predictions, somewhat loose medium/small predictions, and no observed systematic shifts or stretching. Generating all comparisons does not mean every image was reviewed.
 
-Prediction-level analysis is pending in [error_analysis.md](error_analysis.md). Explanations of failure causes need reviewed examples; aggregate metrics identify questions to investigate. The [main report](report.md#limitations-and-next-experiment) sets out the proposed next steps.
+The [review notes](../../../runs/baseline-001/eval-epoch19/visual-checks/review.md) and [selected comparisons](figures/qualitative/README.md) retain qualitative evidence. Visualization used scores above 0.6; AP evaluation used no fixed confidence cutoff. Error prevalence, false-positive/missed-detection counts, TIDE analysis, and controlled resolution experiments have not been established. The [error-analysis template](../../templates/error-analysis.md) is for future work and contains no measured results.
 
 ## Reproduction and artifacts
 
 ### Current reproduction status
 
-The notebook, full epoch log, local dataset annotations, selected checkpoint, and extracted configuration support inspection of the reported experiment. Exact regeneration is incomplete because the historical training revision, full environment, uploaded label conversion, and training seed are not established.
+The bundled evaluation output, evaluated annotation JSON, configuration snapshots, scripts, and metrics support recreating the baseline table. The [main report](report.md#reproduce-the-metrics-table) provides the extraction command and separately describes rerunning evaluation.
 
-The notebook clones the repository without pinning a commit. Historical commands use an `RT-DETR/` directory, whereas the inspected repository stores that implementation under `thrid-party/RT-DETR/`. The copied configuration files under `configs/` also contain relative includes referring to their original upstream directory layout. They must not be treated as a verified runnable reproduction setup in their current location.
+**Checkpoint and validation images are not bundled. Metrics can be extracted from the saved evaluation output; rerunning inference requires those external inputs.** Checkpoint identity and required local paths are recorded in the [manifest](artifact-manifest.json). No image-content manifest or checkpoint download is provided.
+
+Exact training reproduction remains incomplete because the historical training revision, full environment, and explicit training seed were not preserved. The validation label conversion has since been verified. The notebook clones an unpinned repository and uses historical `RT-DETR/` paths. The original training config retains historical includes; the separate active local evaluation config resolves includes under `thrid-party/RT-DETR/`.
+
+The active evaluation config's TensorBoard destination was corrected to `runs/baseline-001/eval-epoch19/tensorboard`. Frozen snapshots retain the historical destination; this changes output location only, not model or evaluation behavior.
 
 ### Dataset reconstruction
 
@@ -285,7 +289,7 @@ No standalone test-evaluation command appears in the notebook. To establish an i
 
 ### Artifact inventory
 
-Relative links below point to files available in the local workspace. Local availability does not establish that a file is committed or downloadable from the public repository. The Kaggle reference is an external notebook link.
+Links below identify bundled evidence or the external notebook. Local-only inputs are shown as paths rather than download links.
 
 | Artifact | Location |
 |---|---|
@@ -295,12 +299,15 @@ Relative links below point to files available in the local workspace. Local avai
 | Printed runtime/configuration snapshot | [resolved-training-config.json](resolved-training-config.json) |
 | Extracted best/final metrics | [metrics.json](metrics.json) |
 | Local evidence sizes and SHA-256 hashes | [artifact-manifest.json](artifact-manifest.json) |
-| Selected epoch-19 checkpoint | [checkpoint0019.pth](../../../runs/baseline-001/checkpoints/checkpoint0019.pth) |
+| Selected epoch-19 checkpoint | `runs/baseline-001/checkpoints/checkpoint0019.pth` (local-only) |
+| Saved COCO evaluation | [eval.pth](../../../runs/baseline-001/eval-epoch19/eval.pth) |
+| Evaluated validation annotations | [kaggle_val_annotations.json](../../../data/raw/annotations/kaggle_val_annotations.json) |
+| Selected comparisons and attribution | [Examples](figures/qualitative/README.md) |
 | Training curves | [training-curves.png](figures/training-curves.png) |
-| Baseline training annotations | [annotations.json](../../../data/processed/baseline_v1_0/annotations.json) |
-| Candidate annotations | [annotations.json](../../../data/processed/selected_v0_1/annotations.json) |
-| Original validation annotations | [valid_annotations.json](../../../data/raw/annotations/valid_annotations.json) |
-| Original test annotations | [test_annotations.json](../../../data/raw/annotations/test_annotations.json) |
+| Baseline training annotations | `data/processed/baseline_v1_0/annotations.json` (local-only) |
+| Candidate annotations | `data/processed/selected_v0_1/annotations.json` (local-only) |
+| Original validation annotations | `data/raw/annotations/valid_annotations.json` (local-only) |
+| Original test annotations | `data/raw/annotations/test_annotations.json` (local-only) |
 | Dataset preparation note | [002-dataset-selection.md](../../decisions/002-dataset-selection.md) |
 
 Hashes identify the inspected local artifacts, not all source-image contents or the Kaggle upload. The JSON configuration snapshot retains historical includes and paths and is not a directly executable training configuration.

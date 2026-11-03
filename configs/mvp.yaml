@@ -1,0 +1,15 @@
+# Proposed settings; configuration loading and inference are not implemented yet.
+detector:
+  config_path: configs/training/baseline-001-eval.yml
+  checkpoint_path: runs/baseline-001/checkpoints/checkpoint0019.pth
+  device: cpu
+  # Starting development threshold, not a measured acceptance threshold.
+  score_threshold: 0.6
+
+ocr:
+  engine: paddleocr
+  language: en
+
+storage:
+  database_path: artifacts/mvp/observations.sqlite3
+  crops_dir: artifacts/mvp/crops

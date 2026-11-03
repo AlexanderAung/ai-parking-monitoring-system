@@ -1,3 +1,10 @@
+# MVP local inputs, downloaded weights, and generated output
+/data/mvp/images/*
+!/data/mvp/images/.gitkeep
+/artifacts/mvp/*
+!/artifacts/mvp/.gitkeep
+/models/
+
 # Data folder 
 /data/raw/*
 !/data/raw/annotations/

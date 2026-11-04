@@ -16,7 +16,7 @@ The detector predicts license-plate bounding boxes. Parking-space occupancy, veh
 
 ## Dataset
 
-The source is the [Roboflow License Plate Recognition dataset](https://universe.roboflow.com/roboflow-universe-projects/license-plate-recognition-rxg4e/dataset/13), represented as COCO detection annotations with one `license_plate` class. Dataset preparation utilities are in `src/parking_monitoring/data/`:
+The source is the [Roboflow License Plate Recognition dataset](https://universe.roboflow.com/roboflow-universe-projects/license-plate-recognition-rxg4e/dataset/13), represented as COCO detection annotations with one `license_plate` class. Dataset preparation utilities are in [scripts/data/](scripts/data/README.md):
 
 - `audit.py` checks image integrity, annotation validity, image/annotation pairing, duplicate files, and suspicious box sizes; it writes `issues.csv`, `summary.json`, and `distributions.png`.
 - `select_dataset.py` excludes ERROR-level issues, orphan images, images with multiple boxes, and relative-box-area outliers (P5–P95). It leaves the raw data unchanged.
@@ -86,7 +86,7 @@ This evaluates the configured validation split, not an independent test split, a
 ```text
 thrid-party/RT-DETR/rtdetrv2_pytorch/  Detector implementation
 configs/                            Project configs
-src/parking_monitoring/data/         Dataset audit and selection utilities
+scripts/data/                       Dataset audit and selection utilities
 scripts/                            Metric extraction and visualizations
 docs/reports/baseline-001/           Baseline report and selected evidence
 docs/templates/                     Templates, not measured experiment results

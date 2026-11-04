@@ -4,9 +4,9 @@ Status: scaffold only. Application, inference wrappers, and tests are not implem
 
 ## Scope
 
-Upload a still image, detect license plates with the trained RT-DETR baseline,
-read Latin registration letters and digits with pretrained OCR, inspect crops and
-results, and save observations for later retrieval. Burmese text is outside this MVP.
+Upload a still image -> detect license plates with the trained RT-DETR baseline -> 
+read Latin registration letters and digits with pretrained OCR -> inspect crops and
+results -> and save observations for later retrieval. (Burmese text is outside this MVP)
 
 ## Setup
 
@@ -18,13 +18,9 @@ uv add --dev pytest ruff jiwer
 uv sync
 ```
 
-These commands update pyproject.toml and uv.lock and install the local source
-package. Dependencies have not yet been resolved or smoke-tested together.
 PaddleOCR model weights are separate from Python packages and may download on
-first inference. Record the chosen OCR model and version after the crop experiment.
+first inference. 
 
-Pillow, NumPy, PyYAML, torch, and torchvision are already project dependencies.
-SQLite, pathlib, logging, and dataclasses are in the Python standard library.
 Pillow is sufficient for initial cropping; add OpenCV only when image processing
 or video requires it, checking for an existing transitive OpenCV distribution first.
 
@@ -34,6 +30,7 @@ or video requires it, checking for an existing transitive OpenCV distribution fi
 - src/parking_monitoring/: reusable inference, configuration, results, and storage.
 - configs/mvp.yaml: proposed local paths and settings; paths resolve from repo root.
 - scripts/: command-line prediction and evaluation entry points.
+- scripts/data/: standalone training-data audit and selection tools.
 - tests/: placeholders for crop, pipeline, and persistence checks.
 - data/mvp/: local images and manually transcribed development/test labels.
 - artifacts/mvp/: generated crops, database, and inference output; ignored by Git.
@@ -51,7 +48,7 @@ persistence outside the core inference function.
 
 ## Completion checklist
 
-- [ ] Detector and OCR smoke tests pass on the local environment.
+- [x] Detector and OCR smoke tests pass on the local environment.
 - [ ] Multiple plates, no detections, and unreadable crops have explicit outcomes.
 - [ ] Original-resolution crops and display overlays can be inspected.
 - [ ] Observations survive an application restart.

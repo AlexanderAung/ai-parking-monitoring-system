@@ -3,21 +3,28 @@
 Status: planned architecture; the current MVP files are scaffolding.
 
 ```mermaid
-flowchart TD
-    UI[Streamlit image upload] --> P[Python pipeline]
-    CLI[Prediction CLI] --> P
-    P --> D[RT-DETR plate detection]
-    D --> C[Crop original-resolution image]
-    C --> O[English OCR]
-    O --> R[Structured results: text, scores, status]
-    R --> UI
-    R --> CLI
-    R --> S[Storage layer]
-    S --> DB[(SQLite observations)]
-    S --> F[Crop files]
-    DB --> H[History view]
-    H --> UI
+flowchart LR
+    IN([Input: image file]) --> UP[Streamlit upload]
+
+    subgraph PIPE["Python pipeline"]
+        direction LR
+        D[RT-DETR detection] --> C[Crop plates]
+        C --> O[PaddleOCR]
+        O --> R[Prepare results and status]
+    end
+
+    UP --> D
+    R --> VIEW[Streamlit results view]
+    VIEW --> OUT([Output: annotated image, plate crops, text and status])
+
+    R --> SAVE[Storage layer]
+    SAVE --> DB[(SQLite metadata)]
+    SAVE --> FILES[Crop files]
 ```
+
+1. The image file enters through Streamlit upload. 
+2. The Python pipeline groups the detection, cropping, OCR, and result-preparation components. It returns structured data to the results view, which presents the annotated image, plate crops, text, and status to the user. 
+3. Storage branches from the structured results.
 
 The detector returns boxes in original-image coordinates. The pipeline validates
 and clamps coordinates before cropping. Visualization draws on a separate copy.
@@ -28,5 +35,7 @@ scores, bounding boxes, status, source ID, timing, and model versions. Scores ar
 model outputs, not calibrated probabilities of a correct plate reading.
 
 Storage saves observation metadata in SQLite and crop references on disk. UI
-reruns must not automatically create duplicate observations. Later API or video
-entry points can reuse the pipeline; tracking and event logic remain future work.
+reruns must not automatically create duplicate observations. The prediction CLI
+can call the same pipeline; it is omitted from this diagram to keep the primary
+user journey clear. Later API or video entry points can also reuse the pipeline;
+tracking and event logic remain future work.

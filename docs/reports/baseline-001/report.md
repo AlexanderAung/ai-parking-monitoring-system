@@ -4,9 +4,9 @@ Alexander Aung Khant Bwar · Updated November 2, 2026 · Training run: September
 
 ## Overview
 
-**This baseline experiment** establishes a license-plate detection baseline for a planned AI parking monitoring system. An RT-DETRv2 detector with a ResNet-18 backbone was fine-tuned on **10,000 training images**, evaluated on **2,048 validation images**, and trained for 50 epochs on **one NVIDIA T4 GPU** in Kaggle.
+**This baseline experiment** establishes a license-plate detection baseline for a planned AI parking monitoring system. An RT-DETRv2 detector with a ResNet-18 backbone was fine-tuned on **10,000 training images**, evaluated on **2,048 validation images**, and trained for 50 epochs on **one NVIDIA T4 GPU** in Kaggle. 
 
-**The best checkpoint reached validation AP@[0.50:0.95] of 0.6565**, with AP50 of 0.9323. Independent test performance has not been measured. The current experiment takes still images and returns plate bounding boxes and confidence scores.
+**The best checkpoint reached validation AP@[0.50:0.95] of 0.6565**, with AP50 of 0.9323. Independent test performance has not been measured. The current experiment takes still images and returns plate bounding boxes and confidence scores. No published baseline exists for this exact split, so this is our reference point.
 
 **The question was practical:** what performance could this baseline configuration establish within the available GPU resources, and what should the next experiment investigate? No accuracy or speed target was predefined. The baseline provides a reference for subsequent comparisons.
 
@@ -87,6 +87,8 @@ The main limits on interpreting this baseline are:
 - **Reproduction and variability:** local evaluation settings, software versions, checkpoint and annotation hashes, and configuration snapshots are preserved. Historical training-code and environment details remain incomplete. Training randomness was not explicitly seeded, and no repeated-run variability or uncertainty estimates are available.
 
 > The baseline is reproducible under the recorded local evaluation setup, with known annotation-quality limitations. Its metrics provide a reference for future comparisons, but should not be interpreted as accuracy against a fully verified ground-truth set. A structured validation-annotation audit and a separate training-data audit should precede decisions about model changes.
+
+**Next:** structured error analysis on the validation set to categorize failure modes and annotation-error prevalence.
 
 ## Evidence and reproduction
 

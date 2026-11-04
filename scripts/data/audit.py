@@ -13,12 +13,13 @@ import numpy as np
 from PIL import Image
 
 # ===================== CONFIG  =====================
-IMAGE_DIR = Path("../../data/raw/train")            # folder with images (recursive OK)
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+IMAGE_DIR = PROJECT_ROOT / "data/raw/train"       # folder with images (recursive OK)
 ANNO_FORMAT = "coco"                           # "yolo" (.txt per image) or "coco" (single .json)
-ANNO_DIR = Path("/path/to/labels")             # used when ANNO_FORMAT == "yolo"
-COCO_JSON = Path("../../data/raw/annotations/train_annotations.json")  # used when ANNO_FORMAT == "coco"
+ANNO_DIR = PROJECT_ROOT / "data/raw/labels"       # used when ANNO_FORMAT == "yolo"
+COCO_JSON = PROJECT_ROOT / "data/raw/annotations/train_annotations.json"  # used when ANNO_FORMAT == "coco"
 CLASS_NAMES = ["unsued", "license_plate"]                # index = class id; extend if multi-class
-OUTPUT_DIR = Path("./audit_report")
+OUTPUT_DIR = PROJECT_ROOT / "artifacts/data-audit/local/audit_report"
 NUM_WORKERS = 16
 MIN_IMG_SIDE = 32
 TINY_BOX_MAX_REL_AREA = 5e-4   # boxes < 0.05% of image area = probably unlearnable

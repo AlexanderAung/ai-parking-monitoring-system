@@ -1,4 +1,5 @@
-# Proposed settings; configuration loading and inference are not implemented yet.
+# Explicit MVP settings. Paths are relative to the project root.
+# Models must already exist locally; configuration loading does not download.
 detector:
   config_path: configs/training/baseline-001-eval.yml
   checkpoint_path: runs/baseline-001/checkpoints/checkpoint0019.pth
@@ -9,7 +10,20 @@ detector:
 ocr:
   engine: paddleocr
   language: en
+  model_version: PP-OCRv4
+  use_gpu: false
+  cpu_threads: 1
+  use_angle_cls: false
+  enable_mkldnn: false
+  det_model_dir: artifacts/mvp/smoke-test/ocr-models/det
+  rec_model_dir: artifacts/mvp/smoke-test/ocr-models/rec
+  cls_model_dir: artifacts/mvp/smoke-test/ocr-models/cls
+  # Provisional read/uncertain boundary; not a calibrated probability.
+  acceptance_threshold: 0.5
+
+crop_padding_pixels: 0
 
 storage:
   database_path: artifacts/mvp/observations.sqlite3
   crops_dir: artifacts/mvp/crops
+  output_dir: artifacts/mvp/results

@@ -4,6 +4,7 @@
 Run from the project root. Relative input paths resolve against that root.
 Existing output images with matching filenames are replaced. The score threshold
 only controls drawing; this script does not calculate or modify AP metrics.
+Use --stdout-only to print predictions without saving annotated images.
 """
 
 import argparse
@@ -146,6 +147,8 @@ def main() -> int:
                         default=Path("runs/baseline-001/checkpoints/checkpoint0019.pth"))
     parser.add_argument("--output-dir", type=Path,
                         default=Path("runs/baseline-001/eval-epoch19/visual-checks/predictions"))
+    parser.add_argument("--stdout-only", action="store_true",
+                        help="Print predictions without drawing or saving images")
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--batch-size", type=int, default=1)
     parser.add_argument("--score-threshold", type=float, default=0.6)
@@ -156,7 +159,7 @@ def main() -> int:
     if not 0 <= args.score_threshold <= 1:
         parser.error("--score-threshold must be between 0 and 1")
 
-    written = displayed = empty = 0
+    processed = written = displayed = empty = 0
     started = time.monotonic()
     try:
         config = project_path(args.config)
@@ -169,36 +172,53 @@ def main() -> int:
         total = len(image_ids)
         if not total:
             raise ValueError("Validation dataset is empty")
-        paths = image_paths(dataset, output_dir, image_ids)
+        paths = {} if args.stdout_only else image_paths(dataset, output_dir, image_ids)
         category_names = dataset.category2name
-        print(f"Predicting {total} images on {device}; batch size {args.batch_size}; "
-              f"display score > {args.score_threshold}", flush=True)
-        print(f"Output: {output_dir} (matching image files will be overwritten)", flush=True)
+        print(f"Predicting {total} images on {device}; batch size {args.batch_size}", flush=True)
+        if args.stdout_only:
+            torch.set_printoptions(threshold=float("inf"))
+            print("Terminal output only; all returned detections; no images will be saved.",
+                  flush=True)
+        else:
+            print(f"Display score > {args.score_threshold}", flush=True)
+            print(f"Output: {output_dir} (matching image files will be overwritten)", flush=True)
 
         batches = itertools.islice(loader, math.ceil(total / args.batch_size))
         for samples, targets in batches:
-            remaining = total - written
+            remaining = total - processed
             samples, targets = samples[:remaining], targets[:remaining]
             predictions = predict_batch(model, postprocessor, samples, targets, device)
             for target, prediction in zip(targets, predictions):
                 image_id = target["image_id"].item()
-                source, destination = paths[image_id]
-                count = draw_prediction(source, destination, prediction,
-                                        category_names, args.score_threshold)
-                written += 1
-                displayed += count
-                empty += count == 0
-                if written == 1 or written % 10 == 0 or written == total:
+                file_name = dataset.coco.imgs[image_id]["file_name"]
+                print(f"Image {processed + 1}/{total}: {file_name} (image_id={image_id})",
+                      flush=True)
+                # Print predictions before applying the drawing threshold.
+                print(prediction, flush=True)
+                if not args.stdout_only:
+                    source, destination = paths[image_id]
+                    count = draw_prediction(source, destination, prediction,
+                                            category_names, args.score_threshold)
+                    written += 1
+                    displayed += count
+                    empty += count == 0
+                processed += 1
+                if processed == 1 or processed % 10 == 0 or processed == total:
                     elapsed = time.monotonic() - started
-                    print(f"[{written}/{total}] images saved; {elapsed:.1f}s elapsed", flush=True)
-        if written != total:
-            raise RuntimeError(f"Expected {total} images, saved {written}")
+                    print(f"[{processed}/{total}] images processed; {written} saved; "
+                          f"{elapsed:.1f}s elapsed", flush=True)
+        if processed != total:
+            raise RuntimeError(f"Expected {total} images, processed {processed}")
     except Exception as error:
-        print(f"[error] Stopped after {written} saved images: {error}", file=sys.stderr)
+        print(f"[error] Stopped after {processed} processed images, {written} saved: {error}",
+              file=sys.stderr)
         return 1
 
-    print(f"Complete: {written} images; {displayed} displayed boxes; "
-          f"{empty} images without detections above threshold.")
+    if args.stdout_only:
+        print(f"Complete: {processed} images processed; no images saved.")
+    else:
+        print(f"Complete: {written} images; {displayed} displayed boxes; "
+              f"{empty} images without detections above threshold.")
     return 0
 
 

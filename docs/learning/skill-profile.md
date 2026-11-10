@@ -36,4 +36,17 @@ Repository artifacts show project experience, but their existence and Git author
 
 ## Assessment change history
 
-No assessment changes yet. Initial baseline is unassessed pending direct evidence.
+### 2026-11-10 — Initial configuration interview
+
+Limited conceptual evidence in the [configuration Q&A](q-and-a.md): the user
+distinguished parsing from value-range validation and identified the project
+root as the intended path base. The user requested guidance on dictionaries
+versus typed settings and on implementing the path anchor. Codex supplied those
+explanations. These observations do not yet justify promoting the broad category
+assessments above; independent explanation and implementation remain unassessed.
+Next practice: typed settings scaffolding and pathlib root/path resolution.
+
+Repository-context correction: `tests/test_config.py` is now empty, and the user
+confirmed deleting its earlier contents. The baseline table's reference to real
+checks is historical, not a statement about current tests. Rewrite tests after
+configuration implementation as agreed.

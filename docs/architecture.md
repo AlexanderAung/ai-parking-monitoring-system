@@ -39,3 +39,25 @@ reruns must not automatically create duplicate observations. The prediction CLI
 can call the same pipeline; it is omitted from this diagram to keep the primary
 user journey clear. Later API or video entry points can also reuse the pipeline;
 tracking and event logic remain future work.
+
+## Configuration boundary — agreed 2026-11-10
+
+The app or prediction CLI loads YAML once and passes relevant settings to the
+detector, OCR, pipeline/cropping, and storage components. Those components do not
+read the YAML themselves.
+
+Configuration owns required fields, types, supported values, numeric ranges and
+path resolution against the project root. It returns structured settings or a
+clear configuration error, without initializing/downloading models, creating
+output directories, or opening the database.
+
+Each component validates the resources it needs when initializing. A missing OCR
+model therefore does not prevent detector-only work. Resolving a path does not
+establish that the resource exists or can load.
+
+Frozen dataclasses for component settings and the grouped AppConfig were agreed
+on 2026-11-10. The user's field/signature skeleton was reviewed against the
+supplied contract; decorator spelling and missing class docstrings were corrected.
+The corrected skeleton imports successfully, but internal implementation has not
+begun. Configuration tests will be rewritten after implementation, as requested
+by the user; the current test file is empty.

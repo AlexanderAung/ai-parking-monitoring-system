@@ -1,6 +1,13 @@
 # Five-day MVP Implementation Plan
 
-Status: **Not started**. All task and acceptance checkboxes are intentionally open.
+Status: **Day 1 in progress**. Configuration and detector internals are implemented.
+The scoped project suite passes 149 cases: 80 configuration and 69 detector unit
+tests with controlled model substitutes. The user reports successful real EMA
+checkpoint initialization and one real-image prediction using the supplied
+terminal sequence. The saved first-image overlay has been inspected by user and
+agent; D1.3 is verified. D1.4 non-square coordinate checks and safe crops remain
+open. Configuration and detector independent-review handoffs are prepared;
+external review outcomes are not recorded.
 Planning baseline: 2026-11-09, commit `6e5dd82`. Days are focused work sessions, not assigned calendar dates.
 Follow the seven-step module workflow in [AGENTS.md](../../AGENTS.md), including architecture agreement, interview, user scaffolding, and independent review handoff. Do not advance to the next day until the user agrees that the current day is complete.
 
@@ -33,9 +40,9 @@ Objective: make existing assets usable through an annotation-independent detecto
 
 | ID | Task | Hours | Depends on |
 | --- | --- | ---: | --- |
-| D1.1 | [ ] Reconcile historical configuration, current YAML, local artifact paths, and existing tests; restore agreed behavior | 1.25 | Architecture/interview/scaffold gates |
-| D1.2 | [ ] Get configuration tests collecting and passing; explain any environment/import failures | 0.75 | D1.1 |
-| D1.3 | [ ] Adapt EMA loading, preprocessing, inference and postprocessing for arbitrary images without a COCO loader | 2.5 | D1.1, D1.2 |
+| D1.1 | [x] Reconcile historical configuration, current YAML, local artifact paths, and existing tests; restore agreed behavior | 1.25 | Architecture/interview/scaffold gates |
+| D1.2 | [x] Get configuration tests collecting and passing; explain any environment/import failures | 0.75 | D1.1 |
+| D1.3 | [x] Adapt EMA loading, preprocessing, inference and postprocessing for arbitrary images without a COCO loader | 2.5 | D1.1, D1.2 |
 | D1.4 | [ ] Verify original-image coordinates; implement finite, ordered, clamped crop bounds and original-resolution crops | 2 | D1.3 |
 | D1.5 | [ ] Learning workflow, integration review, evidence log, contingency | 1.5 | Distributed across D1.1–D1.4 |
 
@@ -43,10 +50,32 @@ Deliverables: reconciled settings and detector/crop interfaces, inspectable dete
 
 Acceptance criteria:
 - [ ] An arbitrary local image produces detections and crops without an annotation file or validation dataset.
-- [ ] Real checkpoint loads with expected EMA parameters; model identity and configuration are recorded.
+- [x] Real checkpoint loads with expected EMA parameters; model identity and configuration are recorded.
 - [ ] Wide/tall image examples confirm original-size mapping; synthetic boundary tests cover invalid/non-finite/reversed/outside boxes and empty results.
 - [ ] Crops come from original pixels, have valid nonempty bounds, and can be visually inspected alongside overlays.
-- [ ] Configuration tests collect and pass; actual commands and any limitations are recorded.
+- [x] Configuration tests collect and pass; actual commands and any limitations are recorded.
+
+Checkpoint-load evidence (2026-11-10): after the supplied load_config() and
+RTDETRDetector(config.detector) sequence, the user reported
+`Detector initialized; EMA checkpoint loaded successfully.` The current YAML
+selects CPU, baseline-001-eval.yml and checkpoint0019.pth; checkpoint SHA-256
+matches the artifact manifest (see progress). This is user-run initialization
+evidence, not an agent rerun. Subsequent user-reported arbitrary-image inference
+on the 480 x 480 image291 development image returned one detection with score
+0.8843116760253906. Exact coordinates are recorded in the progress log. User and
+agent inspected artifacts/mvp/results/detector-check-de6537eb/overlay.png: the
+480 x 480 output box encloses the visible plate and its label matches the reported
+score. This verifies the first-image smoke path, not accuracy across images.
+Non-square image inspection and crops remain open under D1.4. See the
+[detector handoff](../reviews/detector-handoff.md).
+
+Configuration evidence (2026-11-10): `PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest tests -q -p no:cacheprovider`
+exited 0: **80 passed in 0.33s**. All current substantive tests are configuration
+tests. The suite verifies the checked-in YAML and missing-asset behavior; model
+loading and application integration are not established. Historical resource
+existence checks were intentionally removed under the agreed component-owned
+resource validation boundary. See [progress](../progress/completed-work.md) and
+the [independent-review handoff](../reviews/configuration-handoff.md).
 
 ## Day 2 — OCR and End-to-End Pipeline (8 hours)
 

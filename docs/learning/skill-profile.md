@@ -50,3 +50,40 @@ Repository-context correction: `tests/test_config.py` is now empty, and the user
 confirmed deleting its earlier contents. The baseline table's reference to real
 checks is historical, not a statement about current tests. Rewrite tests after
 configuration implementation as agreed.
+
+2026-11-10 follow-up: the user wrote the settings/loader skeleton against a
+detailed supplied contract; Codex corrected two decorator typos and supplied
+three missing class docstrings. Codex subsequently implemented and tested the
+loader (80 passing cases). This is supported scaffolding evidence; independent
+implementation, test design and review explanation remain unassessed. The test
+file is now rewritten; the empty-file note above describes the earlier state.
+
+### 2026-11-10 — Detector interview
+
+The [detector Q&A](q-and-a.md) contains direct explanations distinguishing
+architecture configuration from weights and choosing one-time model loading.
+The user proposed original/resized ratio multiplication for coordinates but
+did not calculate separate axis factors or the final box; Codex supplied that
+worked example. These are limited conceptual observations, not evidence of
+independent inference implementation or coordinate-mapping mastery. Broad
+category assessments remain conservative pending scaffolding and further evidence.
+
+Next focused practice: apply width and height ratios separately, recognize
+that postprocessing already returns original-image pixels, and scaffold the
+agreed reusable detector interface. Avoid treating the guided numerical answer
+as an independently solved problem or repeating already answered basic
+architecture-versus-weights/model-reuse questions without a new reason.
+
+Detector scaffolding follow-up: the user asked whether running the module starts
+inference and whether architecture configuration automatically handles pre/post
+processing. Codex clarified class definitions versus a CLI caller and explicit
+orchestration of transforms, forward pass and postprocessor. This is a concrete
+practice need; no independent implementation evidence or additional mastery
+assessment was inferred from the explanation.
+
+Detector skeleton review: the user supplied the two-method scaffold and noticed
+something was wrong. Codex diagnosed/fixed class-name capitalization and a
+docstring/body indentation mismatch; the corrected public class imports.
+This adds supported scaffolding evidence. Independent diagnosis, internal
+implementation and runtime model integration remain unassessed. Reinforce Python
+block indentation and exact public names during practical review.

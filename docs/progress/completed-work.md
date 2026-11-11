@@ -345,3 +345,299 @@ Original image size: (480, 480)
   is agent-observed. The saved PNG is a local ignored artifact, not a bundled result.
 - **Day 1 partially completed.** Independent-review findings and day-completion
   agreement are pending; D1.4 is the next technical task.
+
+## 2026-11-11 — Day 1 continued — Cropping implemented, awaiting review
+
+### Authorization and implementation
+
+- Crop architecture agreement, three-question interview and user-written skeleton
+  review are recorded. After an exact scope list, the user authorized internals
+  with "approve". This continues Day 1; no day-completion agreement or Day 2 start.
+- Implemented crop_plate in `src/parking_monitoring/pipeline.py` with the approved
+  signature, returning a separate Pillow crop and its exact integer xyxy bounds.
+- Checks: nonempty Pillow image; four finite Python int/float coordinates without
+  booleans; ordered positive-area box; nonnegative integer padding without bool.
+  A wholly outside box is rejected before padding. Partial overlap is allowed.
+- Uses equivalent integer padding/floor/ceil arithmetic, clamps bounds to each
+  image dimension and rejects empty final regions. Pillow read/crop errors become
+  descriptive ValueError with the original cause preserved.
+- Extracts original-resolution pixels using image.crop; mode/source preservation
+  is the implemented contract but has not yet been demonstrated by runtime checks.
+  No OCR/model/file output or full-pipeline orchestration is introduced.
+
+### Actual checks and outcomes
+
+```text
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python -c 'from parking_monitoring.pipeline import crop_plate; print("Implemented crop function imports successfully")'
+Implemented crop function imports successfully
+Exit 0
+
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m ruff check --no-cache src/parking_monitoring/pipeline.py
+All checks passed!
+Exit 0
+
+git diff --check -- src/parking_monitoring/pipeline.py
+No output; exit 0
+```
+
+These checks establish syntax/importability and static quality, not crop behavior.
+The function was not invoked and no tests were written or run in this turn.
+The earlier 149 passing configuration/detector cases were not rerun.
+
+### Files modified
+
+- `src/parking_monitoring/pipeline.py`: crop internals, math import, contract detail.
+- `docs/architecture.md`: internal choices and current verification boundary.
+- `docs/plans/mvp-5-day-plan.md`: implemented/awaiting-review status; D1.4 open.
+- `docs/learning/q-and-a.md`: approval and implementation provenance.
+- `docs/progress/completed-work.md`: this partial entry.
+
+### Remaining work
+
+- Step 5 user implementation review, then Step 6 crop tests and integration.
+- Verify the known detector crop, source-pixel preservation, invalid/outside
+  boundaries, empty results and real wide/tall image coordinate mapping.
+- Crop independent-review handoff, remaining Day 1 acceptance criteria and
+  day-completion agreement remain open. **Day 1 remains partially completed.**
+
+## 2026-11-11 — Day 1 continued — Crop annotations, tests and real output verified
+
+### Changes and scope
+
+- At the user's explicit request, added numbered comments for all eight approved
+  implementation items directly above their respective blocks in pipeline.py.
+- Replaced the crop-test placeholder with 91 cases. Explicit expected bounds
+  and coordinate-coded source pixels provide an oracle independent of Pillow
+  crop when checking geometry and pixel identity. Tests cover source independence,
+  RGB/RGBA/L/P mode preservation, palette preservation, original-resolution
+  extraction, padding, finite/extreme coordinates, malformed/reversed/empty/
+  outside boxes, edge-only contact, and source-pixel read errors.
+- No functional crop implementation changes were required. The detector's
+  existing empty-result tests cover no detections; crop_plate handles one box
+  at a time and no new batch or full-pipeline API was added.
+
+### Actual commands and results
+
+```text
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest tests/test_cropping.py -q -p no:cacheprovider
+Initial targeted run: 91 passed, 1 warning in 0.13s; exit 0
+Warning: pytest deprecates non-Collection parametrize input (enumerate).
+Changed that test parameter input to list(enumerate(...)).
+
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest tests -q -p no:cacheprovider
+Final run: 240 passed in 2.17s, no warnings; exit 0
+
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m ruff check --no-cache src/parking_monitoring/pipeline.py tests/test_cropping.py
+All checks passed!; exit 0
+
+git diff --check -- src/parking_monitoring/pipeline.py tests/test_cropping.py
+No output; exit 0
+
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python /tmp/parking-crop-smoke-44fm8r4w.py
+Exit 0; all verification assertions passed; report/crop/script copied to the run folder below.
+```
+
+The final 240 cases comprise 80 configuration, 69 controlled detector and 91 crop
+cases. No pytest failures or skips occurred. Unscoped vendored tests were not run.
+
+### Real crop evidence
+
+- Used the exact previously user-reported detection on the actual image291 source;
+  no detector/model was reinitialized or rerun in this turn. The verification
+  script calls load_config and crop_plate only, not any annotation loader.
+- Native crop: artifacts/mvp/results/crop-check-t1fcbitw/crop.png, RGB, 106 x 110,
+  bounds (287, 223, 393, 333), padding 0. The agent opened it with view_image and
+  confirmed it contains the visible plate. No OCR inference or accuracy claim.
+- Compared every crop pixel to the source region via getpixel, checked source
+  in-memory mode/pixels and before/after source-file SHA-256, and reopened the
+  saved PNG to verify a lossless pixel/mode/size round trip. All five report
+  checks are true.
+- Source SHA-256: 651ece417c3c4a81763d46b4c4c73ad48a170f3423f7db3645e8fc8d11783612.
+- Crop SHA-256: e4872d4d2a51f4b37f69bfd5aef70ad870009b0e05e91996259ee58fdf3baf3e.
+- Evidence report: artifacts/mvp/results/crop-check-t1fcbitw/report.json.
+  Reproducible script copy: artifacts/mvp/results/crop-check-t1fcbitw/verify_crop.py;
+  run it from the project root using the same environment-variable prefix as
+  above. Each run creates a fresh output directory. Artifacts remain local/ignored.
+
+### Files changed and remaining work
+
+- src/parking_monitoring/pipeline.py: requirement comments; tests/test_cropping.py:
+  new unit suite. Updated architecture, plan, Q&A, profile and this progress log.
+- Added docs/reviews/cropping-handoff.md. No external review outcome is claimed.
+- Verified Day 1 arbitrary-image detection/crop and original-pixel crop criteria
+  from staged user-run detection plus agent-run extraction/inspection. Full
+  application/CLI inference orchestration is not implemented by this verification.
+- D1.4 remains open for real wide/tall detector mapping. Independent reviews,
+  day acceptance and user agreement to complete Day 1 remain pending.
+  **Day 1 is partially completed; Day 2 has not started.**
+
+## 2026-11-11 — Day 1 continued — Wide/tall inputs selected
+
+### Inventory and selection
+
+- User requested finding/selecting the images. Agent scanned local image metadata
+  without model inference or annotation loading. At an aspect-ratio threshold
+  of 1.3, data/mvp/images contained 48 tall and 6 near-square images, with no wide
+  candidates. data/raw/valid contained 1,920 wide, 32 tall and 96 near-square
+  candidates. No read errors were reported by that scan.
+- Agent visually inspected four candidates. Selected, based on original dimensions
+  and whole-plate visibility before seeing detector outputs:
+  - Wide: data/raw/valid/pic_286_jpg.rf.40a15bf1e3a6971f689511c928707991.jpg,
+    2048 x 1536 RGB, a plate close-up from the existing baseline validation pool.
+    SHA-256 f8f010359a5fbab7dd22b641ba4ef6705c46590cab40245896de96d572739d14.
+  - Tall: data/mvp/images/image037_jpg.rf.83a6a458fd5ff401455f8cdda536a5e4.jpg,
+    361 x 480 RGB, a front car view with a fully visible plate.
+    SHA-256 5d88fc457e08ff7cdc8c161cfe44abacfa4a5d146fdc3b9820cf5c3cab073151.
+- Also visually inspected (not selected):
+  data/raw/valid/2xpatsfinal_png_jpg.rf.498b391a0a4017d31310f5827fb1cd61.jpg and
+  data/mvp/images/image034_jpg.rf.cfc75d760fbfea58a7e6363452585ad2.jpg.
+  Keep these viewed candidates development-exposed when defining future splits.
+- Selection manifest saved locally at
+  artifacts/mvp/results/non-square-selection-9t8m101u/selection.json. It records
+  paths, dimensions, mode, source pool, hash and selection rationale. Sources
+  were left in place; no copies, image edits or ground-truth labels were created.
+
+### Limits and next action
+
+- These are development geometry inputs, not untouched held-out evaluation data.
+  Selection did not depend on model predictions. No inference, crop verification
+  or model/test run occurred in this selection turn.
+- D1.4 remains open: next run detection and crop extraction on both selected
+  sources, save overlays/crops and inspect original-coordinate alignment.
+- Updated progress, plan and Q&A selection records only; no application or test
+  source edits. Day 1 remains partially completed.
+
+## 2026-11-11 — Day 1 continued — User-run wide-image crop checked
+
+- Following the selected pic_286 wide-image run, the user reported exactly:
+
+```text
+(374, 330, 1818, 1213)
+(1444, 883)
+```
+
+- Bounds are ordered and within the selected 2048 x 1536 source. The reported
+  dimensions match right-left = 1444 and bottom-top = 883.
+- After being asked about visual coverage, the user confirmed: "i ve checked it and all fine. what is next?"
+  This supplies user-run/user-observed wide-image smoke evidence; no saved wide
+  crop/overlay or full floating-point detection output was supplied to the agent.
+  The agent has not rerun inference or directly viewed this new output.
+- Next is the selected tall image037 (361 x 480). Its path and dimensions were
+  rechecked by the agent. No tall prediction has yet been reported or run here.
+- The current user-authored main in pipeline.py implements the manual wide-image
+  call with a guarded entry point; source/driver edits were preserved. Other
+  configuration/detector edits are present as uncommitted work. The earlier
+  240-test result predates those subsequent edits; rerun scoped checks before
+  claiming the current final state passes.
+- Updated plan, architecture and Q&A. No source edits, model executions or tests
+  were performed in this feedback turn. D1.4 remains open for tall-image mapping.
+
+## 2026-11-11 — Day 1 continued — Real wide/tall verification and regression complete
+
+### Authorization and final changes
+
+- User supplied tall output (361 x 480, bounds 157/248/224/285, size 67 x 37),
+  confirmed visual coverage, added the save snippet, then explicitly asked the
+  agent to finish the job and report after completion.
+- Refined the user's manual main in pipeline.py: retain its no-argument entry
+  point, load one detector and process both selected examples, close images,
+  pass configured crop padding, report/skip empty results, save crop.png plus
+  result.json in fresh UUID folders, and display on normal manual runs. Removed
+  the redundant IndexError rethrow. Core approved interfaces are unchanged.
+- Cleaned import/whitespace style and one redundant test type annotation. Focused
+  Ruff initially reported six findings (two I001, one PYI041, three TRY004).
+  The first three were fixed automatically. The three intentional ValueError
+  sites retain the approved exception contract with local explanatory TRY004
+  suppressions; no public error type was silently changed.
+
+### Actual real-model command and evidence
+
+```text
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src .venv/bin/python /tmp/parking-non-square-di05z91o.py
+Exit 0; actual pipeline.main() initialized the real local EMA model once and
+processed both images. Only Image.Image.show was suppressed; no model or
+prediction was mocked. The saved images were opened directly afterward.
+```
+
+| Case | Original size | Crop bounds | Native crop | Score |
+| --- | --- | --- | --- | --- |
+| Wide pic_286 | 2048 x 1536 | (374, 330, 1818, 1213) | 1444 x 883 | 0.8614094853401184 |
+| Tall image037 | 361 x 480 | (157, 248, 224, 285) | 67 x 37 | 0.8702967166900635 |
+
+- Both results match the user's earlier bounds. Each returned one detection.
+  Source and checkpoint hashes match the prior selection/baseline manifests.
+- Independent source byte-row comparisons prove every saved crop pixel matches
+  its original region. Native dimensions, modes, in-image bounds and unchanged
+  source-file hashes pass. Existing draw_prediction generated original-size
+  overlays; agent opened all four outputs and confirmed full plate/character
+  coverage. The wide crop includes surrounding frame/background; no tightness
+  metric, OCR correctness or general accuracy claim follows.
+- Wide evidence: artifacts/mvp/results/wide-check-4811d7a2/{crop.png,overlay.png,result.json}.
+- Tall evidence: artifacts/mvp/results/tall-check-d5a0d005/{crop.png,overlay.png,result.json}.
+- Reproducible verification report, captured stdout and script copy:
+  artifacts/mvp/results/non-square-verification-z10zeeuq/{report.json,stdout.txt,verify_non_square.py}.
+  Run the script from the project root with the same Python/environment prefix;
+  each run saves fresh folders. The report records code hashes, actual settings,
+  versions, input/checkpoint/output hashes and agent visual-inspection notes.
+- The two source inputs remain development smoke examples, including one from
+  the existing baseline validation pool. No held-out performance was measured.
+
+### Actual final regression results
+
+```text
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest tests -q -p no:cacheprovider
+Initial run after runner edit: 240 passed in 1.78s; exit 0
+Final run after style/contract-comment refinements: 240 passed in 1.74s; exit 0
+
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m ruff check --no-cache src/parking_monitoring/config.py src/parking_monitoring/detector.py src/parking_monitoring/pipeline.py tests/test_config.py tests/test_detector.py tests/test_cropping.py
+Initial run: exit 1, six findings described above.
+Final run: All checks passed!; exit 0
+
+git diff --check -- src/parking_monitoring/config.py src/parking_monitoring/detector.py src/parking_monitoring/pipeline.py tests/test_config.py tests/test_detector.py tests/test_cropping.py
+No output; exit 0
+```
+
+The 240 cases are 80 configuration, 69 controlled detector and 91 crop cases.
+No pytest failures, warnings or skips occurred in these runs. Vendored tests,
+OCR, held-out evaluation and startup/warm latency measurements were not run.
+
+### Files and completion boundary
+
+- App/test changes in this turn: pipeline.py manual runner; config.py import/
+  whitespace layout; detector.py contract comments/style-only edits;
+  tests/test_config.py annotation-only lint fix. Existing user work and all
+  previous artifacts were preserved; no commit, rename or destructive cleanup.
+- Updated architecture, plan, Q&A/profile, three module review handoffs and this
+  log; added docs/reviews/day-1-handoff.md for one concise independent-review input.
+- D1.4 and all five technical Day 1 acceptance criteria are now verified.
+  D1.5/external independent review and the user's Day 1 completion agreement
+  remain pending. **Technical checks complete; Day 1 has not been accepted and
+  Day 2 has not started.**
+
+## 2026-11-11 — Day 1 completed and accepted
+
+- After confirming that all planned Day 1 work and review were finished, the
+  user accepted closeout and requested a short prompt to start Day 2 in a new chat.
+- All Day 1 task/acceptance boxes are checked. Latest verified results remain
+  240 tests passed in 1.74s, focused Ruff pass, and real wide/tall detector/crop
+  execution with saved outputs, source-pixel checks and visual inspection.
+- **Final status: Completed and accepted.** No additional source/test/model runs
+  were needed for this acknowledgment. Day 2 has not started in this chat.
+- New chat should read AGENTS.md, the five-day plan and learning records, then
+  begin OCR architecture agreement and the required learning/scaffold workflow.
+
+## 2026-11-11 — Day 1 — Review completion reported; ready for closeout
+
+- User stated exactly: "I ve finished the review. So that's all for Day1?"
+- Recorded review completion as user-reported. No review report/findings were
+  supplied, so none are invented and no outstanding finding is recorded.
+- D1.5 is now checked; all Day 1 planned task boxes and technical acceptance
+  criteria are satisfied. No additional Day 1 implementation is planned.
+- Application source hashes still match the actual final verification report.
+  No code changed or tests were rerun in this closeout-recording turn. Latest
+  final evidence remains 240 passed in 1.74s, focused Ruff pass, and real wide/tall
+  model/crop/overlay checks with original source pixels preserved.
+- Updated plan, consolidated handoff and Q&A. The user's question is not recorded
+  as a fabricated explicit day-signoff; final day-completion agreement will be
+  recorded before advancing. **Day 1 work/review complete and ready for closeout;
+  Day 2 has not started.**

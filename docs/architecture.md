@@ -193,3 +193,110 @@ unit-test run; the later constructor/prediction reports are separate evidence.
 The detector's [independent-review handoff](reviews/detector-handoff.md) is ready.
 No external review outcome is recorded. Source code/tests were not changed or
 rerun for the overlay inspection; no broader accuracy measurement is claimed.
+
+## Cropping boundary — agreed 2026-11-11
+
+Implement one public crop function in the existing pipeline.py module; full
+detection/OCR orchestration remains later work. No new result schema is needed.
+
+```python
+def crop_plate(
+    image: Image.Image,
+    bbox_xyxy: tuple[float, float, float, float],
+    padding_pixels: int = 0,
+) -> tuple[Image.Image, tuple[int, int, int, int]]: ...
+```
+
+Inputs are the original Pillow image, one original-pixel detector box and an
+explicit nonnegative integer padding value. The caller passes the configured
+crop_padding_pixels; the function does not load configuration itself. Return
+the cropped image and exact integer xyxy bounds for later PlateResult use.
+
+Require finite ordered coordinates and a usable image. Reject boxes with no
+positive-area overlap with the original image before padding, even if padding
+could reach into the image. Expand by padding, floor left/top, ceil right/bottom,
+then clamp to image dimensions and require nonempty final bounds. Left/top are
+inclusive; right/bottom are exclusive, matching schemas.py.
+
+Invalid/unusable inputs raise descriptive ValueError; the caller decides failure
+handling. Extract original-resolution pixels and preserve the source image;
+display, file saving and OCR remain caller responsibilities. With zero padding,
+the previously reported box rounds to (287, 223, 393, 333), a 106 x 110 crop.
+That initially expected arithmetic is now verified by real extraction: the saved
+106 x 110 RGB crop matches the source pixels exactly and has been visually inspected.
+
+The user accepted the proposal with "Agree, let's go". The three-question crop
+interview and user-written scaffold review are complete. A docstring/body
+indentation mismatch was corrected and AST parsing passed. After an exact
+implementation-scope list, the user replied "approve". Internal implementation
+was implemented, and the user subsequently requested annotations mapping every
+approved implementation item to its code, followed by tests and real-output checks.
+Day 1 continues as a work session on this date; Day 2 has not started.
+
+### Crop internals — implemented and tested 2026-11-11
+
+The function requires a nonempty Pillow image, a four-item tuple of finite Python
+int/float coordinates (excluding bool), ordered positive-area bounds, and
+nonnegative integer padding (excluding bool). It rejects an unpadded box with no
+positive-area overlap, calculates outward-rounded padded bounds, clamps each axis
+against its own image dimension and requires a nonempty region. Pillow crop is
+used to return a separate image and exact integer bounds while preserving source
+mode/pixel values. Expected Pillow read/crop failures become ValueError with cause.
+
+Because padding p is an integer, floor(x - p) = floor(x) - p and
+ceil(x + p) = ceil(x) + p. The implementation uses these equivalent integer
+operations to avoid floating-point overflow/precision loss during padding;
+the approved outward-padding/rounding result is preserved. Python integers are
+finite without conversion; only float coordinates need an isfinite check.
+
+Numbered comments above the relevant blocks map the eight approved implementation
+items to the code. There were no functional changes during test development.
+The 91 crop cases verify explicit bounds, coordinate-coded original pixels,
+source/crop independence, modes/palette preservation, partial/outside/reversed/
+non-finite boxes, padding (including very large integers) and readable errors.
+The final scoped suite passes 240 cases in 2.17s; Ruff passes.
+
+A separate verification script applied the function to the user's recorded
+detection on the real image291 source. Bounds are (287, 223, 393, 333), with a
+106 x 110 RGB crop. Every crop pixel was compared against the original region;
+source pixels/mode and source-file hash remained unchanged, and a saved PNG
+round trip was lossless. The agent opened the crop and confirmed the visible
+plate is contained. Evidence is under artifacts/mvp/results/crop-check-t1fcbitw/.
+No model was rerun; this uses the earlier user-run detection on the same image.
+
+Afterward, the user ran the selected wide image (2048 x 1536), reported crop
+bounds (374, 330, 1818, 1213), size 1444 x 883, and confirmed full-plate coverage.
+This is user-observed smoke evidence; no saved wide output was agent-inspected.
+The user then supplied tall bounds (157, 248, 224, 285), size 67 x 37, and confirmed
+visual coverage. The agent subsequently reran both selected inputs with the real
+CPU model and obtained the same bounds, saved both crops/overlays and directly
+inspected full-plate coverage. D1.4 is now verified.
+Full pipeline orchestration remains later work. The cropping independent-review
+[handoff](reviews/cropping-handoff.md) is prepared; no external review is recorded.
+
+### Manual runner and final Day 1 verification — 2026-11-11
+
+The user developed a guarded manual main in pipeline.py through guided practice.
+At their request to finish saving/verifying both cases, it was refined to retain
+main() with no required arguments, process the two preselected source paths with
+one detector instance, close source/crop images, pass configured padding, skip
+empty detections, save the first crop and result.json in a fresh folder, and show
+the crop on normal manual invocation. This is a two-example inspection runner;
+the standalone prediction CLI and full detection/OCR orchestration remain pending.
+The public crop/detector/config interfaces were preserved.
+
+The agent executed this actual main with only Image.Image.show suppressed to
+avoid desktop popups. Model loading, forward passes, preprocessing/postprocessing,
+cropping and file writes were real. The verification script compared saved crops
+against independent source byte-row slices, checked original-size bounds, selected
+source hashes and unchanged source files, then reused draw_prediction to produce
+overlays. Native crops and original-size overlays were opened by the agent.
+
+Evidence: artifacts/mvp/results/non-square-verification-z10zeeuq/{report.json,
+stdout.txt,verify_non_square.py}; wide-check-4811d7a2/{crop.png,overlay.png,result.json}
+and tall-check-d5a0d005/{crop.png,overlay.png,result.json}. Both cases match the
+user's earlier bounds. The checkpoint hash again matches the baseline manifest.
+Final scoped suite: 240 passed in 1.74s. Focused Ruff passes; intentional ValueError
+contracts have local TRY004 explanations rather than changing approved exceptions.
+All technical Day 1 acceptance criteria are verified; independent review and
+day-completion agreement remain pending. No general accuracy/latency claim is made.

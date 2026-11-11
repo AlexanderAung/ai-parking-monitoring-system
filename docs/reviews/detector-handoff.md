@@ -1,7 +1,8 @@
 # Detector — independent-review handoff
 
-Date: 2026-11-10. D1.3's first arbitrary-image path is verified; D1.4 non-square
-mapping and safe cropping are pending. Independent-review findings are not recorded.
+Created 2026-11-10; updated 2026-11-11. D1.3 and D1.4 technical goals are verified,
+including real agent-run wide/tall inference and saved crop/overlay inspection.
+Independent-review findings are not recorded. See day-1-handoff.md.
 
 ## Responsibility and interface
 
@@ -64,6 +65,12 @@ Tests use controlled backend components/mocked torch.load and a tiny actual
 PyTorch module for strict synthetic parameter loading. They verify wrapper
 contracts, not real-model accuracy or the vendored preprocessing implementation.
 
+The command results above describe the initial detector verification. After crop
+integration and manual-runner refinements, the final scoped suite passes 240
+cases in 1.74s; focused Ruff on config/detector/pipeline and their tests passes.
+Latest lint cleanup retains the approved ValueError contract via documented
+local TRY004 exceptions; it does not change public failure types.
+
 Separate user-run evidence from the supplied Python-session commands:
 
 - RTDETRDetector(load_config().detector) completed and the user reported the
@@ -78,11 +85,20 @@ Separate user-run evidence from the supplied Python-session commands:
 - Checkpoint SHA-256 was independently read by the agent and matches the saved
   baseline manifest: a48b7e760bc273ed8ba52a6f749b0944d2e420e2393d71917fd01df99030d871.
 
+Subsequent agent-run real CPU evidence (2026-11-11): actual pipeline.main() loaded
+one detector and processed both preselected inputs. Wide 2048 x 1536 produced
+bounds (374, 330, 1818, 1213), crop 1444 x 883, score 0.8614094853401184; tall
+361 x 480 produced (157, 248, 224, 285), crop 67 x 37, score 0.8702967166900635.
+Only the desktop viewer was suppressed; no model/prediction was mocked.
+The agent opened both native crops/original-size overlays, confirmed full-plate
+coverage, and verified exact source pixels and unchanged source hashes. Current
+report/script/stdout are under artifacts/mvp/results/non-square-verification-z10zeeuq/.
+
 ## Limitations and learning gaps
 
-- One square development-image smoke test is not an accuracy benchmark. Real
-  wide/tall mapping, multiple/no-plate image cases, startup/warm latency and
-  broader quality measurements remain unverified. No OCR or crops are implemented.
+- These square/wide/tall development smoke checks are not an accuracy benchmark.
+  Real multiple/no-plate image cases, startup/warm latency and broader quality
+  measurements remain unverified. Cropping is implemented; OCR is still pending.
 - The standalone prediction CLI, storage/UI integration and portability are
   pending. Unscoped vendored tests were not run. The overlay and checkpoint are
   local ignored artifacts. This image is development-exposed, not untouched holdout.
@@ -95,4 +111,5 @@ Separate user-run evidence from the supplied Python-session commands:
 Please review interface/responsibility boundaries, backend/config assumptions,
 EMA restoration, preprocessing/coordinate semantics, failure handling and whether
 the evidence supports the stated completion. Return actionable findings within
-the still-image MVP scope. Remaining Day 1 goals are not marked complete.
+the still-image MVP scope. Technical Day 1 criteria are verified; external
+review and day-completion agreement remain pending.

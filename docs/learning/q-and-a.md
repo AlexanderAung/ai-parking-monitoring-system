@@ -376,3 +376,249 @@ Original image size: (480, 480)
 - The user completed guided runtime commands and reported visual satisfaction.
   This does not establish independent implementation or formal evaluation skill;
   original interview answers and evidence distinctions remain preserved.
+
+## 2026-11-11 — Cropping
+
+### Architecture agreement
+
+The user accepted the proposed crop contract with: "Agree, let's go".
+
+Use crop_plate(original Pillow image, floating-point xyxy box, padding_pixels=0)
+in pipeline.py, returning (crop image, exact integer xyxy bounds). Validate
+finite/ordered coordinates, nonnegative integer padding and original-image
+overlap before padding. Expand, round outward, clamp and ensure nonempty bounds.
+Raise ValueError for invalid/unusable inputs; preserve original pixels/source;
+caller owns configuration loading, OCR, display and persistence. See architecture.md.
+
+The three-question interview begins now, one question at a time. No answers or
+feedback are inferred from agreement; scaffolding and implementation are pending.
+
+### Question 1 — Conceptual
+
+**Question:**
+
+The detector resizes images to 640 x 640 internally. Why should crop_plate()
+extract the plate from the original image instead of that resized version?
+Consider both the returned box coordinates and the detail OCR needs to read characters.
+
+**My original answer:**
+
+> I guess it is To get the full resolution? we first need to convert the bbox coordinates back to the original ratio than we crop it.
+
+**Feedback:**
+
+Correct reason to retain original character detail. The proposed extra coordinate
+conversion is unnecessary here: the detector's postprocessor already returns
+original-image coordinates. Codex clarified that crop_plate receives them directly
+and performs validation, padding, rounding and clamping, without scaling again.
+This is partial conceptual understanding with a responsibility-boundary gap;
+independent correct coordinate handling has not been observed.
+
+**What I learned:** Not supplied by the user.
+
+### Question 2 — Engineering/architecture
+
+**Question:**
+
+Why should crop_plate() return the exact integer bounds it used, alongside the
+cropped image, when we already have the detector's original box? Consider what
+padding, rounding, and clamping can change.
+
+**My original answer:**
+
+> I don't know, why do we need both? my guess is bec the detector's original box are in floats? we need discrete number to select the pixels? I think i m wrong.
+
+**Feedback:**
+
+Correctly identified discrete pixel selection. Codex explained the additional
+reason for returning bounds: preserve the original model prediction separately
+from the exact region actually extracted after padding/rounding/clamping. The
+bounds support crop reproducibility and later PlateResult.crop_bbox_xyxy use.
+The user did not independently explain that result-contract rationale.
+
+**What I learned:** Not supplied by the user.
+
+### Question 3 — Applied problem-solving (stretch)
+
+**Question:**
+
+An image is 100 pixels wide x 60 pixels high. With zero padding, the detector
+gives (x_min, y_min, x_max, y_max) = (-3.2, 10.8, 30.1, 65.4). Using our rules
+(round left/top down, right/bottom up, then clamp), what integer bounds should
+we use? Should this partially outside box be rejected, or can we extract a valid crop?
+
+**My original answer:**
+
+> i don't know this one.
+
+**Feedback:**
+
+No solution was supplied; Codex provided a worked example. Round to
+(-4, 10, 31, 66), then clamp x boundaries to [0, 100] and y boundaries to [0, 60],
+giving (0, 10, 31, 60). The box overlaps the image, so it produces a valid
+31 x 50 crop. Bottom 60 is a valid exclusive bound; the last included row is 59.
+The arithmetic and overlap explanation are guided instruction, not a solution
+demonstrated by the user. No additional main interview questions are added.
+
+**What I learned:** Not supplied by the user.
+
+### Learning gaps identified
+
+- Reinforce that postprocessing already produces original-pixel boxes; crop code
+  must not scale them again.
+- Practice outward rounding (including negative values), clipping each coordinate
+  against its own image dimension, and exclusive right/bottom bounds.
+- Distinguish partial overlap (valid after clamping) from no overlap (reject),
+  and understand why the returned crop bounds accompany original detections.
+- User crop scaffolding and implementation ability remain unassessed.
+
+### Concepts demonstrated
+
+- Identified original-resolution detail as a reason for cropping original pixels.
+- Identified discrete pixel selection as a reason to use integer crop bounds.
+- These observations do not establish independent geometry or implementation mastery.
+
+### Follow-up evidence
+
+- Three-question interview complete. Codex is supplying the agreed function
+  signature/docstring and NotImplementedError stub for user-written scaffolding.
+- No crop implementation or tests have been written or run during this interview.
+
+### Follow-up — Crop skeleton syntax review
+
+- User request: "check there is any syntax error in my implementation."
+- The user's function signature, return type, docstring contract and stub matched
+  the supplied interface. The opening docstring had five leading spaces and
+  raise NotImplementedError had four. AST parsing exited 1 with IndentationError
+  at the raise on original line 27; the inconsistent block began at the docstring.
+- Codex aligned both body statements to four spaces and normalized signature/import
+  spacing. The signature's original continuation indentation and omitted trailing
+  comma were legal Python, not the cause of the syntax failure.
+- After correction, `PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -c 'import ast; from pathlib import Path; path = Path("src/parking_monitoring/pipeline.py"); ast.parse(path.read_text(encoding="utf-8"), filename=str(path)); print("Syntax check passed")'`
+  exited 0 and printed the success message. No crop function execution or tests
+  occurred; the body still raises NotImplementedError.
+- This repeats the docstring/body indentation pattern seen in the detector
+  skeleton. Supported scaffolding is observed; independent diagnosis or internal
+  implementation is not inferred. The reviewed crop skeleton is ready for internals.
+
+### Follow-up — Approved crop implementation
+
+- After requesting an exact implementation list, the user replied: "approve".
+- Codex implemented only crop_plate internals (plus the standard-library math
+  import), preserving the approved public signature and return contract.
+  Validation, unpadded overlap checks, padding/outward rounding/clamping and
+  original-pixel extraction are present. No full inference orchestration is added.
+- Integer padding commutes with floor/ceil; the code uses integer arithmetic for
+  that equivalent calculation to avoid float overflow/precision loss. This is an
+  implementation explanation supplied by Codex, not independently demonstrated
+  user reasoning or an added interview question.
+- The module imports and Ruff/whitespace checks pass. No crop invocation or
+  behavior tests were run; Step 5 user review precedes Step 6 testing/integration.
+- Internal logic is Codex-authored. No personal mastery assessment is promoted
+  based on the generated implementation or static checks.
+
+### Follow-up — Requirement annotations, crop tests and real output
+
+**User's original request:**
+
+> ok, before writing test and verify real output, take each lines from your implementation list and annotate above its respective codes. after that you can carry out your tests
+
+- Codex added numbered comments mapping all eight approved implementation items
+  to their respective code blocks, then wrote 91 crop tests. No production logic
+  changes were needed. The initial targeted run passed with one pytest parameter-
+  iterator deprecation warning; converting that new-test parameter input to a
+  list resolved it. The final scoped suite passed 240 cases in 2.17s without warnings.
+- Real crop verification used the user's earlier detection box on the actual
+  source image, not a new detector run. Bounds (287, 223, 393, 333), size 106 x 110,
+  pixel identity, mode/source preservation and lossless saved PNG checks passed.
+  The agent opened the saved crop and confirmed it contains the visible plate.
+  Evidence: artifacts/mvp/results/crop-check-t1fcbitw/.
+- Real detector wide/tall mapping remains pending. Tests and verification scripts
+  are Codex-authored; requirement annotations support review but do not demonstrate
+  the user's independent understanding or implementation mastery. No new questions
+  or inferred user reflections are added.
+
+### Follow-up — Development wide/tall image selection
+
+- User request: "ok, can you find, select and choose?"
+- Agent scanned local metadata and visually inspected candidates, selecting
+  pic_286 from data/raw/valid (2048 x 1536) and image037 from data/mvp/images
+  (361 x 480) before running predictions. Both have fully visible plates.
+- Selection and file hashes are recorded in the progress log and
+  artifacts/mvp/results/non-square-selection-9t8m101u/selection.json.
+  These are development inputs; one comes from the already-used baseline
+  validation pool. No new held-out evaluation, inference results or user mastery
+  evidence is claimed. Real wide/tall verification is still the next activity.
+
+### Follow-up — Guided manual driver and wide-image result
+
+- The user requested guess-first feedback instead of a complete recipe. Through
+  iterative snippets, the user corrected the coordinate field selection, package-
+  qualified imports, execution guard/setup placement, and an early return for
+  empty detections after focused prompts. This is guided applied evidence; it
+  does not establish independent mastery of those patterns. User-authored source
+  edits are preserved, including the current manual main in pipeline.py.
+- The user later explicitly requested display code; Codex supplied the Pillow
+  image-viewer method. No independent implementation authorship is attributed
+  for that supplied refinement.
+- The user's original wide-image output was:
+
+```text
+(374, 330, 1818, 1213)
+(1444, 883)
+```
+
+- The user then confirmed: "i ve checked it and all fine. what is next?"
+  The reported size agrees with the bounds and selected 2048 x 1536 source.
+  Visual coverage is user-observed; the agent has not viewed a saved wide result.
+- Next is the tall image037 at 361 x 480. No new main interview questions are
+  introduced. Current source edits require fresh tests before final acceptance;
+  no new runtime checks were performed in this feedback turn.
+
+### Follow-up — Tall result and delegated verification
+
+**User's original tall-image output:**
+
+```text
+Original image size: (361, 480)
+(157, 248, 224, 285)
+(67, 37)
+```
+
+**User's original visual-confirmation message:**
+
+```text
+For step 1.
+i ve check the pic and it is great. 
+where do i save? 
+```
+
+- Visual satisfaction is user-reported. Codex supplied a fresh-folder save snippet.
+- The user then delegated the remaining run/save work: "i ve added it to the main, you finish that job, and report me after it finished."
+- Codex refined the user's manual runner to process both preselected examples
+  using one detector instance, close files, use configured padding, save PNG and
+  result metadata, and preserve the guarded entry point. No approved public
+  config/detector/crop signature changed. A redundant rethrow was removed.
+- The agent ran actual CPU main/model inference with only the desktop viewer
+  suppressed, verified exact native crop pixels/source hashes, and opened both
+  saved overlays and crops. Both cases reproduced the user's bounds. No model
+  or prediction was mocked. Final scoped suite: 240 passed in 1.74s; Ruff passes.
+- These real execution results verify implementation behavior. The user's
+  earlier guided fixes demonstrate developing application of imports, function
+  calls/return values and control flow after prompts. Resource handling, looped
+  runner refinements, metadata saving and automated verification here are
+  Codex-authored; independent mastery is not inferred. External review and
+  Day 1 completion agreement remain pending.
+
+### Follow-up — Day 1 review completion reported
+
+**User's original message:**
+
+> I ve finished the review. So that's all for Day1?
+
+- Review completion is recorded as reported by the user. No detailed review
+  findings, independent explanation or additional implementation evidence was
+  supplied; none is inferred and no mastery assessment is changed.
+- All Day 1 planned tasks/technical criteria are checked. Final day-completion
+  agreement remains to be recorded before moving to Day 2. No source changes,
+  model execution or test rerun occurred in this closeout feedback turn.

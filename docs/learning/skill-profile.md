@@ -6,7 +6,7 @@ Repository artifacts show project experience, but their existence and Git author
 
 | Category | Current assessment | Evidence | Next development area |
 | --- | --- | --- | --- |
-| Python fundamentals | Not assessed | [Result dataclasses](../../src/parking_monitoring/schemas.py) and [data scripts](../../scripts/data/README.md) exist; individual understanding/implementation independence is unverified. | Explain type hints, validation and exceptions; write a small typed module skeleton. |
+| Python fundamentals | Conceptual: Developing in imports, function calls and control flow; independent implementation: Not assessed | [2026-11-11 crop/driver Q&A](q-and-a.md): corrected package imports, coordinate-field access, main guard and early return through iterative guided snippets; repeated indentation corrections needed. | Practice argument/return contracts, resource handling and purposeful exception handling; explain choices independently. |
 | Object-oriented programming | Not assessed | Four result dataclasses and historical configuration dataclasses (`0a3031f`) provide discussion material, not personal competency evidence. | Explain data containers versus behavior-bearing classes and when composition helps. |
 | Data structures and algorithms | Not assessed | [Validation inference](../../scripts/predict_validation.py) uses lists, dictionaries and tensors; personal reasoning about them has not been observed. | Choose result containers and reason through filtering and crop-bound operations. |
 | Software architecture and interface design | Not assessed | [Architecture](../architecture.md) separates inference, UI and persistence; personal design reasoning is not recorded. | Explain module boundaries and scaffold agreed public interfaces. |
@@ -87,3 +87,42 @@ docstring/body indentation mismatch; the corrected public class imports.
 This adds supported scaffolding evidence. Independent diagnosis, internal
 implementation and runtime model integration remain unassessed. Reinforce Python
 block indentation and exact public names during practical review.
+
+### 2026-11-11 — Cropping interview
+
+The [cropping Q&A](q-and-a.md) preserves all three original answers. The user
+identified original image detail and discrete pixel selection, but proposed
+another coordinate conversion after the detector; Codex clarified that
+postprocessing already returns original pixels. Returning exact crop bounds
+separately from model predictions required an explanation. The user supplied no
+solution to the outward-rounding/clamping exercise; Codex provided the full
+worked example. This is guided learning, not an independently completed solution.
+
+Practice priorities are original-pixel responsibility boundaries, floor/ceil,
+partial overlap versus no overlap, and exclusive bounds. Independent crop
+geometry and implementation remain unassessed; broad mastery labels are not
+promoted from the guided arithmetic. Next evidence should come from reviewing
+the user's scaffold and discussing concrete implementation behavior.
+
+Crop skeleton follow-up: the user supplied the agreed interface but repeated a
+docstring/body indentation mismatch (five spaces versus four). Codex diagnosed
+and corrected it; AST parsing then passed. This reinforces a concrete Python
+practice need: consistent function-body indentation, including docstrings.
+The scaffold follows a supplied contract and contains no internal crop logic;
+independent implementation and numerical crop handling remain unassessed.
+
+2026-11-11 crop verification follow-up: the user requested numbered requirement
+annotations above their code blocks before tests. Codex added them and authored
+91 passing crop cases plus a verified real crop. This records a useful review
+preference; passing generated tests and the annotated implementation do not
+establish independent user mastery. Original-pixel ownership and bounds behavior
+remain appropriate subjects for a focused implementation review, without restarting
+the completed three-question interview.
+
+2026-11-11 manual-driver follow-up: repeated user-authored guesses and revisions
+provide enough direct evidence for a narrowly scoped Developing conceptual
+assessment in Python imports/calls/control flow. Corrections followed focused
+prompts, and the complete runner was refined by Codex, so independent
+implementation remains unassessed. The real wide/tall runs and passing tests
+establish software behavior, not personal mastery. Do not repeat the completed
+module interviews; carry these specific practice needs into the next module.

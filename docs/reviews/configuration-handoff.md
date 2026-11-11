@@ -1,7 +1,8 @@
 # Configuration — independent-review handoff
 
-Date: 2026-11-10. Status: implemented and tested as a module; independent review
-and integration with future detector/OCR/app components are pending.
+Created 2026-11-10; updated 2026-11-11. Configuration is implemented, tested and
+used by the real detector/crop manual runner. Independent review and OCR/app
+integration remain pending. See day-1-handoff.md for current final evidence.
 
 ## Responsibility and public interface
 
@@ -46,8 +47,10 @@ PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest tests -q -p no:cacheprovide
 ```
 
 Environment: Python 3.12.9, pytest 9.2.0, PyYAML 6.0.3. `git diff --check` passed.
-`tests/test_config.py` contains all 80 parametrized cases; other project test
-files remain placeholders. Coverage includes real MVP YAML from another working
+The result above is the initial configuration-only run. Current final suite:
+240 passed in 1.74s (80 configuration, 69 detector, 91 crop). Focused Ruff passes
+on all three modules and their tests. `tests/test_config.py` contains 80 cases;
+full-pipeline/storage tests remain placeholders. Coverage includes real MVP YAML from another working
 directory, explicit roots/external YAML, all resource-path conversions, missing
 assets/no project output creation, frozen settings, structure/types/ranges and
 contextual errors for invalid YAML/encoding/file input. No test failures occurred.
@@ -55,12 +58,15 @@ contextual errors for invalid YAML/encoding/file input. No test failures occurre
 ## Limits and open work
 
 - Successful configuration loading does not prove a checkpoint, OCR models,
-  hardware device or backend option can initialize. No inference was run.
-- No app/CLI integration yet; the actual YAML is exercised through the loader.
+  hardware device or backend option can initialize. A separate current real-model
+  run verified the selected CPU configuration; it does not establish other options.
+- Manual detector/crop integration uses load_config; the standalone prediction
+  CLI and OCR/Streamlit/storage integration are still pending.
 - Direct dataclass construction bypasses loader validation. The default root
   assumes a source checkout; other layouts must supply project_root.
-- Unscoped vendored tests were not run. No claim of crop/pipeline/storage coverage.
-- Day 1 detector/crop acceptance criteria remain open.
+- Unscoped vendored tests were not run. Current crop tests are separate evidence;
+  full detection-to-OCR pipeline/storage behavior remains unverified.
+- Technical Day 1 criteria are verified; external review and user sign-off remain.
 
 ## Learning evidence and review focus
 

@@ -1,13 +1,14 @@
 # Five-day MVP Implementation Plan
 
-Status: **Day 1 in progress**. Configuration and detector internals are implemented.
-The scoped project suite passes 149 cases: 80 configuration and 69 detector unit
-tests with controlled model substitutes. The user reports successful real EMA
-checkpoint initialization and one real-image prediction using the supplied
-terminal sequence. The saved first-image overlay has been inspected by user and
-agent; D1.3 is verified. D1.4 non-square coordinate checks and safe crops remain
-open. Configuration and detector independent-review handoffs are prepared;
-external review outcomes are not recorded.
+Status: **Day 1 completed and accepted; Day 2 will start in a new chat**.
+Current scoped tests pass 240 cases in 1.74s. The agent ran the real CPU manual
+main on both selected wide/tall images, verified saved original-pixel crops and
+source hashes, and opened both overlays/crops. D1.1-D1.4 and all five technical
+acceptance criteria are verified. The user reports finishing the review; no
+findings were supplied or are recorded as outstanding. D1.5 is complete on that
+reported basis. The user accepted closeout by saying it is okay and requesting a
+handoff to start Day 2 in a new chat. No Day 2 implementation has started here.
+See the [consolidated Day 1 handoff](../reviews/day-1-handoff.md).
 Planning baseline: 2026-11-09, commit `6e5dd82`. Days are focused work sessions, not assigned calendar dates.
 Follow the seven-step module workflow in [AGENTS.md](../../AGENTS.md), including architecture agreement, interview, user scaffolding, and independent review handoff. Do not advance to the next day until the user agrees that the current day is complete.
 
@@ -43,16 +44,16 @@ Objective: make existing assets usable through an annotation-independent detecto
 | D1.1 | [x] Reconcile historical configuration, current YAML, local artifact paths, and existing tests; restore agreed behavior | 1.25 | Architecture/interview/scaffold gates |
 | D1.2 | [x] Get configuration tests collecting and passing; explain any environment/import failures | 0.75 | D1.1 |
 | D1.3 | [x] Adapt EMA loading, preprocessing, inference and postprocessing for arbitrary images without a COCO loader | 2.5 | D1.1, D1.2 |
-| D1.4 | [ ] Verify original-image coordinates; implement finite, ordered, clamped crop bounds and original-resolution crops | 2 | D1.3 |
-| D1.5 | [ ] Learning workflow, integration review, evidence log, contingency | 1.5 | Distributed across D1.1–D1.4 |
+| D1.4 | [x] Verify original-image coordinates; implement finite, ordered, clamped crop bounds and original-resolution crops | 2 | D1.3 |
+| D1.5 | [x] Learning workflow, integration review, evidence log, contingency | 1.5 | Distributed across D1.1–D1.4 |
 
 Deliverables: reconciled settings and detector/crop interfaces, inspectable detections/crops, relevant test evidence.
 
 Acceptance criteria:
-- [ ] An arbitrary local image produces detections and crops without an annotation file or validation dataset.
+- [x] An arbitrary local image produces detections and crops without an annotation file or validation dataset.
 - [x] Real checkpoint loads with expected EMA parameters; model identity and configuration are recorded.
-- [ ] Wide/tall image examples confirm original-size mapping; synthetic boundary tests cover invalid/non-finite/reversed/outside boxes and empty results.
-- [ ] Crops come from original pixels, have valid nonempty bounds, and can be visually inspected alongside overlays.
+- [x] Wide/tall image examples confirm original-size mapping; synthetic boundary tests cover invalid/non-finite/reversed/outside boxes and empty results.
+- [x] Crops come from original pixels, have valid nonempty bounds, and can be visually inspected alongside overlays.
 - [x] Configuration tests collect and pass; actual commands and any limitations are recorded.
 
 Checkpoint-load evidence (2026-11-10): after the supplied load_config() and
@@ -66,8 +67,31 @@ on the 480 x 480 image291 development image returned one detection with score
 agent inspected artifacts/mvp/results/detector-check-de6537eb/overlay.png: the
 480 x 480 output box encloses the visible plate and its label matches the reported
 score. This verifies the first-image smoke path, not accuracy across images.
-Non-square image inspection and crops remain open under D1.4. See the
+Non-square image inspection remains open under D1.4. See the
 [detector handoff](../reviews/detector-handoff.md).
+
+Crop evidence (2026-11-11): 91 crop cases pass within the final scoped suite
+(240 passed in 2.17s). Actual extraction from the user's recorded detection on
+image291 produced bounds (287, 223, 393, 333), size 106 x 110. Pixel-by-pixel checks,
+source-file hash preservation and lossless PNG round trip pass; the agent visually
+inspected the real crop alongside the earlier overlay. This is a staged user-run
+detector plus agent-run crop check, not a unified inference CLI or a new model run.
+See artifacts/mvp/results/crop-check-t1fcbitw/{crop.png,report.json,verify_crop.py}
+and the [crop handoff](../reviews/cropping-handoff.md). D1.4 stays open until real
+wide/tall mapping is checked; no Day 1 completion or Day 2 start is recorded.
+Selected development inputs are pic_286 (2048 x 1536, existing baseline validation
+pool) and image037 (361 x 480, local MVP pool). Their paths/hashes and rationale
+are in artifacts/mvp/results/non-square-selection-9t8m101u/selection.json and the
+progress log. The wide-image user run subsequently returned crop bounds
+(374, 330, 1818, 1213), size 1444 x 883, with visual coverage confirmed by the user.
+The subsequent agent-run verification completed both cases using the real model:
+wide bounds (374, 330, 1818, 1213), crop 1444 x 883; tall bounds
+(157, 248, 224, 285), crop 67 x 37. All pixel/source checks passed, and both
+overlays/crops were opened and visually checked. Report:
+artifacts/mvp/results/non-square-verification-z10zeeuq/report.json.
+The main now saves both selected examples in fresh folders with result.json,
+using one detector instance. Final scoped rerun: 240 passed in 1.74s; focused
+Ruff and source/test patch checks pass. External review and user sign-off remain.
 
 Configuration evidence (2026-11-10): `PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest tests -q -p no:cacheprovider`
 exited 0: **80 passed in 0.33s**. All current substantive tests are configuration

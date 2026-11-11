@@ -226,7 +226,7 @@ def test_invalid_thresholds(
 
 @pytest.mark.parametrize("value", [0, 1, 0.5])
 def test_threshold_boundaries_are_accepted(
-    value: int | float,
+    value: float,
     tmp_path: Path,
     settings: dict[str, Any],
     config_file: Path,

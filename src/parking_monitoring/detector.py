@@ -47,7 +47,8 @@ class RTDETRDetector:
             RuntimeError: Model, EMA weights or device cannot initialize.
         """
         if not isinstance(config, DetectorConfig):
-            raise ValueError("config must be a DetectorConfig")
+            # Preserve the agreed ValueError contract for invalid settings.
+            raise ValueError("config must be a DetectorConfig")  # noqa: TRY004
         if (
             type(config.score_threshold) not in (int, float)
             or not 0 <= config.score_threshold <= 1
@@ -66,7 +67,7 @@ class RTDETRDetector:
             ("checkpoint", config.checkpoint_path),
         ):
             if not isinstance(path, Path):
-                raise ValueError(f"Detector {label} must be a pathlib.Path")
+                raise ValueError(f"Detector {label} must be a pathlib.Path")  # noqa: TRY004
             if not path.is_file():
                 raise FileNotFoundError(f"Detector {label} file not found: {path}")
 
@@ -89,7 +90,10 @@ class RTDETRDetector:
                 or not isinstance(state.get("ema"), dict)
                 or not isinstance(state["ema"].get("module"), dict)
             ):
-                raise ValueError("Checkpoint has no EMA module; this baseline requires EMA weights")
+                # Keep the diagnostic cause; initialization wraps it below.
+                raise ValueError(  # noqa: TRY004
+                    "Checkpoint has no EMA module; this baseline requires EMA weights"
+                )
             model = cfg.model
             model.load_state_dict(state["ema"]["module"], strict=True)
             del state
@@ -205,6 +209,7 @@ class RTDETRDetector:
                         )
                     )
                 return detections
+
         except Exception as exc:
             raise RuntimeError(
                 f"RT-DETR inference failed for a {width}x{height} image: {exc}"

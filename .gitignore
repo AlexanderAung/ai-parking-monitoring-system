@@ -24,6 +24,8 @@ runs/baseline-001/eval-epoch19/visual-checks/ground-truth-sizes
 runs/baseline-001/eval-epoch19/visual-checks/predictions
 runs/baseline-001/eval-epoch19/visual-checks/comparison
 src/parking_monitoring/config.md
+docs/plans/baseline-evaluation-plan.md
+docs/plans/ml-evaluation-workflow.md
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

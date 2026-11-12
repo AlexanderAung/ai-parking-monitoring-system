@@ -24,7 +24,7 @@ The original dataset has already been done a data augmentations
 
 ## 4. Dataset Selection
 ### Data Audit 
-Before selecting any images, do data audit with src/data/audit.py 
+Before selecting any images, audit the data with [scripts/data/audit.py](../scripts/data/audit.py). See the [tool instructions](../scripts/data/README.md) for paths and commands.
 1. Check metadata 
 2. Find and flag, bboxes that are less than 0.05% of image area, bec it is probably unlearnable
 3. Find and flag, plates(anno bbox) covering 90% of the frame which is suspicious

@@ -26,6 +26,7 @@ runs/baseline-001/eval-epoch19/visual-checks/comparison
 src/parking_monitoring/config.md
 docs/plans/baseline-evaluation-plan.md
 docs/plans/ml-evaluation-workflow.md
+mm-plates
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

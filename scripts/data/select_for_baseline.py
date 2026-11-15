@@ -24,12 +24,13 @@ import random
 # ============================================================================
 
 # Input: cleaned candidate dataset
-INPUT_DIR = Path("data/selected_v0_1")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+INPUT_DIR = PROJECT_ROOT / "data/selected_v0_1"
 INPUT_IMAGE_DIR = INPUT_DIR / "images"
 INPUT_COCO_JSON = INPUT_DIR / "annotations.json"
 
 # Output: baseline dataset
-OUTPUT_DIR = Path("data/baseline_test")
+OUTPUT_DIR = PROJECT_ROOT / "data/baseline_test"
 OUTPUT_IMAGE_DIR = OUTPUT_DIR / "images"
 OUTPUT_COCO_JSON = OUTPUT_DIR / "annotations.json"
 

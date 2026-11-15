@@ -6,10 +6,11 @@ from collections import defaultdict
 from PIL import Image, ImageDraw
 
 # ================= CONFIG =================
-ISSUES_CSV = Path("./audit_report/issues.csv")
-COCO_JSON = Path("../../data/raw/annotations/train_annotations.json")
-IMAGE_DIR = Path("../../data/raw/train")
-OUTPUT_DIR = Path("./audit_inspection")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+ISSUES_CSV = PROJECT_ROOT / "artifacts/data-audit/local/audit_report/issues.csv"
+COCO_JSON = PROJECT_ROOT / "data/raw/annotations/train_annotations.json"
+IMAGE_DIR = PROJECT_ROOT / "data/raw/train"
+OUTPUT_DIR = PROJECT_ROOT / "artifacts/data-audit/local/audit_inspection"
 
 TARGET_CHECKS = {
     "box_tiny",

@@ -63,6 +63,8 @@ The audit checks include:
 * Duplicate images
 * Image/annotation pairing
 
+The current audit tool writes to `artifacts/data-audit/local/audit_report/`.
+Historical baseline evidence remains under `artifacts/data-audit/roboflow-v13-train/`.
 The audit produces:
 
 ```text

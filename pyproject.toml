@@ -1,3 +1,11 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["parking_monitoring*"]
+
 [project]
 name = "ai-parking-monitoring-system"
 version = "0.1.0"
@@ -11,11 +19,21 @@ dependencies = [
     "onnx>=1.23.1",
     "onnxruntime>=1.30.0",
     "packaging>=26.3",
+    "paddleocr>=2.10.0",
+    "paddlepaddle>=3.3.1",
     "pillow>=12.3.0",
     "pycocotools>=2.0.11",
     "pyyaml>=6.0.3",
     "scipy>=1.18.1",
+    "streamlit>=1.66.1",
     "tensorboard>=2.21.0",
     "torch>=2.0.1",
     "torchvision>=0.15.2",
+]
+
+[dependency-groups]
+dev = [
+    "jiwer>=4.0.0",
+    "pytest>=9.2.0",
+    "ruff>=0.17.3",
 ]

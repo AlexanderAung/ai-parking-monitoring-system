@@ -28,15 +28,16 @@ import numpy as np
 # ============================================================================
 
 # Input dataset
-IMAGE_DIR = Path("../../data/raw/train")
-COCO_JSON = Path("../../data/raw/annotations/train_annotations.json")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+IMAGE_DIR = PROJECT_ROOT / "data/raw/train"
+COCO_JSON = PROJECT_ROOT / "data/raw/annotations/train_annotations.json"
 
 # Audit output
-AUDIT_DIR = Path("./audit_report")
+AUDIT_DIR = PROJECT_ROOT / "artifacts/data-audit/local/audit_report"
 ISSUES_CSV = AUDIT_DIR / "issues.csv"
 
 # Output dataset
-OUTPUT_DIR = Path("../../data/selected_v0_1")
+OUTPUT_DIR = PROJECT_ROOT / "data/selected_v0_1"
 OUTPUT_IMAGE_DIR = OUTPUT_DIR / "images"
 OUTPUT_COCO_JSON = OUTPUT_DIR / "annotations.json"
 

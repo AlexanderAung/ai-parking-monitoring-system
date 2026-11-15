@@ -261,7 +261,7 @@ The active evaluation config's TensorBoard destination was corrected to `runs/ba
 
 ### Dataset reconstruction
 
-The recorded sequence is `audit.py` → `select_dataset.py` → `select_for_baseline.py`. Before rerunning, configure input/output paths for each script's working directory, set the training sample target to 10,000 rather than the current inspection target of 100, preserve five bins and seed 42, and verify the selected annotation manifest. The existing script defaults use differing relative directory layouts, so no unverified one-command reconstruction is claimed here.
+The recorded sequence is `audit.py` → `select_dataset.py` → `select_for_baseline.py`. These tools now live in [scripts/data/](../../../scripts/data/README.md), with paths anchored to the repository root and new audit output under `artifacts/data-audit/local/`. Before rerunning, review input/output settings, set the training sample target to 10,000 rather than the current inspection target of 100, preserve five bins and seed 42, and verify the selected annotation manifest. Historical script defaults used differing relative directory layouts; moving the tools and standardizing paths does not establish reproduction of the original dataset.
 
 ### Original notebook training commands
 
